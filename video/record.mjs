@@ -32,10 +32,16 @@ const glide = async (from, to, ms) => {
   }
 };
 
-await page.goto(URL, { waitUntil: 'networkidle' });
-await wait(600);
+// ?intro=1 boots the page with the black overlay already up: no board flash on frame zero
+await page.goto(URL + '?intro=1', { waitUntil: 'commit' });
+await page.waitForFunction(() => window.arenaIntro);
 
-// CH1 - the hook (0:00-0:12)
+// CH0 - brand card (0:00-0:03)
+await intro('<span style="background:#ff4b1f;color:#fff;padding:10px 26px;border:2px solid #d9d6c8;letter-spacing:2px">HARNESSARENA</span>', 'RACE YOUR AI SETUP');
+await page.waitForLoadState('networkidle');
+await wait(3000);
+
+// CH1 - the hook (0:03-0:14)
 await intro('Have you ever wondered...', '');
 await wait(2600);
 await intro('Have you ever wondered... <em>am I using AI the best way I could?</em>', '');
