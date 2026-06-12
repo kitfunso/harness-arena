@@ -19,13 +19,16 @@ Angle: harness > model; benchmarks hide the harness. We measure it.
 node runner/run.mjs --task tasks/csv-parser --harness codex-cli --model gpt-5.5 --cmd "codex exec --full-auto --cd {ws} {prompt}"
 
 ## Status
-- [x] tasks x3 written
-- [x] runner written
-- [ ] index.html UI
-- [ ] sanity-test runner with a reference solution
-- [ ] seed real runs (Codex credit from 12:00; maybe one claude -p haiku run)
-- [ ] deploy: npx vercel (static)
-- [ ] video 90s + submit by 3:45
+- [x] tasks x3 written, hidden suites verified (refsol 100%, stubs fail)
+- [x] runner written + validated end-to-end (3 reference-human baseline runs recorded)
+- [x] index.html UI live, checked in browser on :8123
+- [x] git repo, 2 commits
+- [ ] seed real agent runs - codex csv-parser IN FLIGHT (bw1a2nv20)
+      NOTE: must call codex via direct binary: node %APPDATA%\npm\node_modules\@openai\codex\bin\codex.js
+      (hippo wrapper codex.cmd breaks under cmd.exe spawn - fix belongs in hippo, tracked)
+- [ ] more seeds: codex low-effort variant (same task = race demo), codex x2 other tasks, maybe 1 claude haiku
+- [ ] deploy: npx vercel (NOT logged in yet - Keith must run: npx vercel login)
+- [ ] video 90s + submit by 3:45 at community.vercel.com/hackathon/built-in-london (password shiplondon)
 
 ## Constraints
 - Claude token budget ~15% left -> no sub-agent fan-out, no dev-framework-rl, write-once files

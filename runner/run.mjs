@@ -6,7 +6,7 @@
 // {ws} -> temp workspace dir. {prompt} -> task README content (shell-quoted).
 // The agent only sees the copied workspace; the hidden test suite stays outside it.
 
-import { spawn } from 'node:child_process';
+import { spawn, execSync } from 'node:child_process';
 import { mkdtempSync, cpSync, readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve, basename, dirname } from 'node:path';
@@ -34,6 +34,8 @@ const ws = mkdtempSync(join(tmpdir(), `arena-${task}-`));
 cpSync(join(taskDir, 'workspace'), ws, { recursive: true });
 // Spec goes into the workspace as a file; multi-line prompts don't survive Windows shells.
 writeFileSync(join(ws, 'TASK.md'), spec);
+// Agents expect a trusted git workspace (codex refuses non-repos, claude diffs against HEAD).
+try { execSync('git init -q && git add -A && git commit -qm task-start', { cwd: ws, stdio: 'ignore', shell: true }); } catch { /* agent may still cope */ }
 
 const promptQuoted = '"Complete the task described in TASK.md in the current directory. Edit impl.mjs only. A hidden test suite scores you on correctness - be precise about the spec, then stop."';
 const cmd = cmdTemplate.replaceAll('{ws}', ws).replaceAll('{prompt}', promptQuoted);
@@ -47,6 +49,7 @@ function record(stream, chunk) {
   for (const line of chunk.toString().split(/\r?\n/)) {
     if (!line.trim() || events.length >= MAX_EVENTS) continue;
     events.push({ t: Date.now() - t0, s: stream, x: line.slice(0, 220) });
+    console.log(`  [${stream}] ${line.slice(0, 160)}`);
   }
 }
 
@@ -54,14 +57,20 @@ console.log(`[arena] task=${task} harness=${harness}`);
 console.log(`[arena] ws=${ws}`);
 console.log(`[arena] cmd=${cmd.slice(0, 160)}...`);
 
-const child = spawn(cmd, { shell: true, cwd: ws, env: { ...process.env, ARENA_WS: ws } });
+// stdin must be closed: codex exec waits forever on a piped-open stdin ("Reading additional input...").
+const child = spawn(cmd, { shell: true, cwd: ws, env: { ...process.env, ARENA_WS: ws }, stdio: ['ignore', 'pipe', 'pipe'] });
 let outputBytes = 0;
 child.stdout.on('data', d => { outputBytes += d.length; record('out', d); });
 child.stderr.on('data', d => { outputBytes += d.length; record('err', d); });
 
-const killer = setTimeout(() => { console.log('[arena] TIMEOUT, killing'); child.kill('SIGKILL'); }, timeoutMs);
+const killer = setTimeout(() => {
+  console.log('[arena] TIMEOUT, killing process tree');
+  if (process.platform === 'win32') spawn('taskkill', ['/pid', String(child.pid), '/T', '/F']);
+  else child.kill('SIGKILL');
+}, timeoutMs);
 
-const exitCode = await new Promise(res => child.on('close', res));
+// 'exit' not 'close': orphaned grandchildren can hold the stdio pipes open indefinitely on Windows.
+const exitCode = await new Promise(res => child.on('exit', res));
 clearTimeout(killer);
 const durationMs = Date.now() - t0;
 
