@@ -105,7 +105,7 @@
   #lbBody .srow:last-child { border-bottom: none; }
   #lbBody .tablewrap { border: none; }
 
-  .tablewrap { overflow-x: auto; border: 2px solid var(--line); background: var(--panel); }
+  .tablewrap { overflow-x: auto; border: 2px solid var(--line); background: var(--panel); -webkit-overflow-scrolling: touch; }
   table { width: 100%; border-collapse: collapse; min-width: 860px; }
   th { text-align: left; background: var(--ink); color: var(--bg); font-size: 10px; text-transform: uppercase; letter-spacing: 1.6px; padding: 8px 12px; font-weight: 800; }
   td { padding: 11px 12px; border-bottom: 1px dashed var(--ink3); font-size: 12px; }
@@ -182,6 +182,27 @@
   #intro .big { font: 700 clamp(26px, 4.2vw, 46px)/1.45 var(--mono); max-width: 980px; }
   #intro .big em { color: var(--green); font-style: normal; text-shadow: 0 0 16px rgba(43,217,76,.5); }
   #intro .sub { margin-top: 26px; color: var(--ink2); font: 700 12px var(--mono); letter-spacing: 3px; text-transform: uppercase; }
+
+  /* phone */
+  @media (max-width: 640px) {
+    .wrap { padding: 0 12px 60px; }
+    nav { gap: 6px; }
+    nav button { flex: 1 1 auto; padding: 10px 8px; font-size: 11px; letter-spacing: 1px; }
+    .chip { padding: 8px 12px; }
+    .colp { display: none; }
+    table { min-width: 560px; }
+    th, td { padding: 9px 8px 9px 0; font-size: 11px; }
+    th:first-child, td:first-child { padding-left: 10px; }
+    .srow { grid-template-columns: 1fr; }
+    .srow .scorecol { text-align: left; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+    .srow .rbar { width: 110px; align-self: center; }
+    .srow .rating { font-size: 26px; }
+    .racebar { flex-direction: column; align-items: stretch; }
+    select, .btn { max-width: none; width: 100%; }
+    .vs { text-align: center; }
+    .term { height: 240px; }
+    .hright { width: 100%; justify-content: space-between; }
+  }
 </style>
 </head>
 <body>
@@ -427,7 +448,7 @@ function runRow(r, i, showTask) {
     <tr class="${i === 0 ? 'first' : ''}" style="animation-delay:${i * 45}ms">
       <td class="rank">${i + 1}</td>
       <td><span class="hname">${r.harness}</span><br><span class="mod">${r.model || ''}</span></td>
-      <td style="font-size:10.5px;color:var(--ink2)">${r.harness === HUMAN ? '<span style="color:var(--ink3)">baseline</span>' : (r.owner ? '@' + r.owner + (r.x ? ' &middot; x/' + r.x : '') : 'anonymous')}</td>
+      <td class="colp" style="font-size:10.5px;color:var(--ink2)">${r.harness === HUMAN ? '<span style="color:var(--ink3)">baseline</span>' : (r.owner ? '@' + r.owner + (r.x ? ' &middot; x/' + r.x : '') : 'anonymous')}</td>
       ${showTask ? `<td>${r.task} <span class="tiertag ${tierOf(r.task) === 2 ? 't2tag' : 't1tag'}">T${tierOf(r.task)}</span></td>` : ''}
       <td>${pillFor(r)}</td>
       <td>${r.harness === HUMAN ? '<span style="color:var(--ink3)">unrated</span>' : `<span class="scoreCell">${r.runScore}</span>`}</td>
@@ -447,8 +468,8 @@ function renderLeaderboard() {
   $('lbmode').textContent = taskFilter.toUpperCase() + ' · TIER ' + tierOf(taskFilter);
   const rows = RUNS.filter(r => r.task === taskFilter)
     .slice().sort((a, b) => (b.runScore ?? -1) - (a.runScore ?? -1) || a.durationMs - b.durationMs);
-  $('lbBody').innerHTML = `<div class="tablewrap"><table><thead><tr>
-    <th>#</th><th>Harness</th><th>Participant</th><th>Tests</th><th>Score</th><th>Time</th><th>Tokens</th><th>Output</th>
+  $('lbBody').innerHTML = `<div class="tablewrap" style="border:none"><table><thead><tr>
+    <th>#</th><th>Harness</th><th class="colp">Participant</th><th>Tests</th><th>Score</th><th>Time</th><th>Tokens</th><th>Output</th>
   </tr></thead><tbody>` + rows.map((r, i) => runRow(r, i, false)).join('') + '</tbody></table></div>';
 }
 
@@ -460,7 +481,7 @@ function renderBoard() {
   }
   computeRunScores();
   $('boardWrap').innerHTML = `<div class="tablewrap" style="border:none"><table><thead><tr>
-    <th>#</th><th>Harness</th><th>Participant</th><th>Task</th><th>Tests</th><th>Score</th><th>Time</th><th>Tokens</th><th>Output</th>
+    <th>#</th><th>Harness</th><th class="colp">Participant</th><th>Task</th><th>Tests</th><th>Score</th><th>Time</th><th>Tokens</th><th>Output</th>
   </tr></thead><tbody>` + rows.map((r, i) => runRow(r, i, true)).join('') + '</tbody></table></div>';
 }
 
