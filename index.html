@@ -7,169 +7,181 @@
 <meta property="og:title" content="HarnessArena">
 <meta property="og:description" content="Same model. Same task. A hundred ways to harness it. Real agent runs, ranked and replayable.">
 <meta property="og:image" content="https://harness-arena-three.vercel.app/og.png">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23100f0d'/><text y='.85em' x='8' font-size='80' fill='%23ff5a1f' font-family='Georgia' font-style='italic'>A</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230c0d0a'/><rect x='10' y='30' width='80' height='40' fill='%23ff4b1f'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #100f0d; --panel: #161412; --panel2: #1d1a17; --line: #2a2622; --hairline: #211e1a;
-    --text: #ece8df; --dim: #9a948b; --dim2: #635d55;
-    --accent: #ff5a1f; --green: #4cb963; --amber: #d9a13b; --red: #d95757; --gold: #c9a227;
-    --serif: 'Fraunces', Georgia, serif;
-    --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+    --bg: #0c0d0a; --panel: #11130e; --panel2: #161812;
+    --ink: #d9d6c8; --ink2: #8e8c7e; --ink3: #5a584e; --line: #d9d6c8;
+    --red: #ff4b1f; --yellow: #ffd60a; --green: #2bd94c; --green2: #1d7f3a;
+    --blue: #5b8cff; --purple: #a78bfa; --amber: #ffb01f;
+    --mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  ::selection { background: var(--accent); color: #100f0d; }
+  ::selection { background: var(--yellow); color: #0c0d0a; }
   html { scroll-behavior: smooth; }
-  body { background: var(--bg); color: var(--text); font-family: var(--mono); overflow-x: hidden; }
+  body { background: var(--bg); color: var(--ink); font: 400 13px/1.7 var(--mono); overflow-x: hidden; }
 
-  .grain { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .04; mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  /* CRT layer */
+  .crt { position: fixed; inset: 0; z-index: 90; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 1px, transparent 1px 3px); opacity: .35; }
+  .crt::after { content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 40%, transparent 55%, rgba(0,0,0,.32) 100%); }
 
-  .ticker { border-bottom: 1px solid var(--hairline); background: var(--bg); overflow: hidden; white-space: nowrap; font-size: 10.5px; padding: 9px 0; letter-spacing: .6px; color: var(--dim); }
+  a { color: var(--blue); }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 18px 80px; }
+
+  /* ticker */
+  .ticker { border-bottom: 2px solid var(--line); background: var(--bg); overflow: hidden; white-space: nowrap; font-size: 11.5px; padding: 7px 0; }
   .ticker span { display: inline-block; animation: tick 42s linear infinite; }
   @keyframes tick { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-  .ticker b { color: var(--text); font-weight: 600; }
-  .ticker i { color: var(--accent); font-style: normal; }
-  .ticker .sep { color: var(--dim2); margin: 0 20px; }
+  .ticker b { color: var(--ink); font-weight: 700; }
+  .ticker i { color: var(--green); font-style: normal; font-weight: 700; }
+  .ticker .sep { color: var(--ink3); margin: 0 18px; }
 
-  .wrap { max-width: 1140px; margin: 0 auto; padding: 0 26px 90px; }
-
-  /* masthead: compact broadsheet header */
-  header { padding: 30px 0 0; border-bottom: 1px solid var(--hairline); margin-bottom: 30px; }
-  .mhrow { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; flex-wrap: wrap; }
-  .kicker { color: var(--dim2); font-size: 10.5px; letter-spacing: 3.5px; text-transform: uppercase; }
-  .kicker em { color: var(--accent); font-style: normal; }
-  h1.logo { font-family: var(--serif); font-weight: 440; font-size: clamp(34px, 4.4vw, 50px);
-    line-height: 1.0; letter-spacing: -.5px; font-variation-settings: 'opsz' 144; }
-  h1.logo .it { font-style: italic; color: var(--accent); font-weight: 480; }
+  /* header: 2chain-style chip + live clock */
+  header { padding: 16px 0 0; }
+  .mhrow { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: baseline; gap: 10px; }
+  .brand .chipname { background: var(--red); color: #fff; font-weight: 800; padding: 5px 12px; letter-spacing: 1px; font-size: 15px; border: 2px solid var(--line); }
+  .brand .chipname .blink { animation: blink 1.1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .brand .sub { color: var(--ink2); font-size: 12px; }
+  .hright { color: var(--ink2); font-size: 12px; display: flex; gap: 14px; align-items: center; }
+  .hright .live { color: var(--green); font-weight: 700; }
+  nav { display: flex; gap: 8px; margin: 14px 0 24px; flex-wrap: wrap; }
+  nav button { background: var(--bg); border: 2px solid var(--line); color: var(--ink);
+    font: 700 12px var(--mono); padding: 9px 22px; cursor: pointer; letter-spacing: 1.5px; }
+  nav button.on { background: var(--yellow); color: #0c0d0a; border-color: var(--line); }
+  nav button:not(.on):hover { background: var(--panel2); }
+  .view { display: none; } .view.on { display: block; animation: fadein .25s ease; }
+  @keyframes fadein { from { opacity: 0; } }
 
   /* two-column board */
-  .boardgrid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 48px; align-items: start; }
-  @media (max-width: 980px) { .boardgrid { grid-template-columns: 1fr; } .brail { border-left: none !important; padding-left: 0 !important; position: static !important; } }
-  .brail { position: sticky; top: 64px; display: flex; flex-direction: column; gap: 24px;
-    border-left: 1px solid var(--hairline); padding-left: 30px; }
-  #stats { display: flex; flex-direction: column; gap: 14px; }
-  .brail .stat { border-bottom: 1px solid var(--hairline); padding-bottom: 14px; }
-  .stat .k { color: var(--dim2); font-size: 10px; text-transform: uppercase; letter-spacing: 2.2px; }
-  .stat .v { font-family: var(--serif); font-weight: 500; font-size: 34px; margin-top: 6px; color: var(--text); font-variation-settings: 'opsz' 60; }
-  .stat .v.ac { color: var(--accent); }
-  .pull { font-family: var(--serif); font-style: italic; font-weight: 360; font-size: 21px; line-height: 1.5; color: var(--text); }
-  .railcopy { font-size: 11.5px; line-height: 1.95; color: var(--dim); }
-  .railcopy b { color: var(--text); font-weight: 600; }
-  .railcopy .ac { color: var(--accent); }
-  .railenter .rk { color: var(--dim2); font-size: 10px; letter-spacing: 2.2px; margin-bottom: 8px; }
-  .railenter code { display: block; background: var(--panel); border: 1px solid var(--hairline); padding: 10px 12px; color: var(--text); font-size: 10px; line-height: 1.8; word-break: break-all; }
+  .boardgrid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 26px; align-items: start; }
+  @media (max-width: 980px) { .boardgrid { grid-template-columns: 1fr; } .brail { position: static !important; } }
+  .brail { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 14px; }
+  .box { border: 2px solid var(--line); background: var(--panel); }
+  .boxhead { background: var(--ink); color: var(--bg); font-weight: 800; font-size: 11px; letter-spacing: 2px; padding: 6px 12px; display: flex; justify-content: space-between; }
+  .boxbody { padding: 14px; }
+  .brail .stat { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 0; border-bottom: 1px dashed var(--ink3); }
+  .brail .stat:last-child { border-bottom: none; }
+  .stat .k { color: var(--ink2); font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.5px; }
+  .stat .v { font-size: 22px; font-weight: 800; color: var(--ink); }
+  .stat .v.ac { color: var(--green); text-shadow: 0 0 12px rgba(43,217,76,.45); }
+  .pull { font-size: 13px; line-height: 1.8; color: var(--ink); font-weight: 600; }
+  .pull em { color: var(--yellow); font-style: normal; }
+  .railcopy { font-size: 11px; line-height: 1.9; color: var(--ink2); }
+  .railcopy b { color: var(--ink); }
+  .railcopy .ac { color: var(--green); }
+  .railenter code { display: block; background: var(--bg); border: 1px dashed var(--ink3); padding: 9px 10px; color: var(--green); font-size: 10px; line-height: 1.8; word-break: break-all; margin-top: 8px; }
 
-  nav { display: flex; gap: 34px; margin: 22px 0 0; padding: 0; position: sticky; top: 0; z-index: 50;
-    background: linear-gradient(var(--bg) 82%, transparent); }
-  nav button { background: none; border: none; color: var(--dim2); font: 600 11.5px var(--mono);
-    padding: 4px 0 10px; cursor: pointer; letter-spacing: 2.4px; border-bottom: 2px solid transparent; transition: color .15s; }
-  nav button.on { color: var(--text); border-bottom-color: var(--accent); }
-  nav button:not(.on):hover { color: var(--dim); }
-  .view { display: none; } .view.on { display: block; animation: fadein .3s ease; }
-  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } }
+  /* standings: 2chain-style bordered cards with score bars */
+  .humanline { border: 2px solid var(--line); background: var(--panel2); color: var(--ink2); font-size: 11px; padding: 7px 12px; margin-bottom: 12px; }
+  .humanline b { color: var(--amber); }
+  .srow { border: 2px solid var(--line); background: var(--panel); margin-bottom: 12px; padding: 14px 16px 12px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 4px 18px; }
+  .srow .nm { font-size: 17px; font-weight: 800; letter-spacing: .5px; }
+  .srow .nm .champ { background: var(--red); color: #fff; font-size: 9px; letter-spacing: 2px; padding: 3px 8px; margin-left: 10px; vertical-align: 2px; font-weight: 800; }
+  .srow .handles { font-size: 11px; color: var(--ink2); }
+  .srow .handles a { color: var(--blue); text-decoration: none; }
+  .srow .setup { font-size: 10px; color: var(--ink3); line-height: 1.7; margin-top: 4px; }
+  .srow .scorecol { text-align: right; }
+  .srow .rating { font-size: 30px; font-weight: 800; color: var(--green); text-shadow: 0 0 14px rgba(43,217,76,.4); line-height: 1.1; }
+  .srow .rbar { height: 8px; border: 1px solid var(--line); margin-top: 6px; background: var(--bg); }
+  .srow .rbar i { display: block; height: 100%; background: var(--green); box-shadow: 0 0 10px rgba(43,217,76,.6); width: 0; animation: barfill .9s .15s ease forwards; }
+  .srow .meta2 { font-size: 10.5px; color: var(--ink2); margin-top: 5px; }
+  .srow .meta2 i { color: var(--green); font-style: normal; }
+  @keyframes barfill { to { width: var(--w); } }
 
-  /* standings: timing-sheet rows */
-  .humanline { color: var(--dim2); font-size: 11.5px; margin-bottom: 18px; letter-spacing: .4px; }
-  .humanline b { color: var(--gold); }
-  .standings { border-top: 1px solid var(--line); margin-bottom: 44px; }
-  .srow { display: grid; grid-template-columns: 96px 1fr; gap: 6px 22px; align-items: baseline;
-    padding: 18px 0 16px; border-bottom: 1px solid var(--hairline); }
-  .srow .sright { grid-column: 2; text-align: left; }
-  .srow .rating { font-family: var(--serif); font-weight: 550; font-size: 40px; color: var(--dim); font-variation-settings: 'opsz' 60; }
-  .srow.lead .rating { color: var(--accent); }
-  .srow .nm { font-family: var(--serif); font-size: 23px; font-weight: 480; }
-  .srow.lead .nm::after { content: 'CHAMPION'; font-family: var(--mono); font-size: 9px; letter-spacing: 2.5px;
-    color: var(--accent); border: 1px solid var(--accent); padding: 3px 7px; margin-left: 12px; vertical-align: 3px; }
-  .srow .handles { font-size: 11.5px; color: var(--dim); margin-top: 5px; }
-  .srow .handles a { color: var(--dim); text-decoration: none; border-bottom: 1px solid var(--hairline); }
-  .srow .handles a:hover { color: var(--text); }
-  .srow .setup { font-size: 10.5px; color: var(--dim2); margin-top: 7px; line-height: 1.7; max-width: 560px; }
-  .srow .sright { text-align: right; font-size: 11.5px; color: var(--dim); line-height: 2; }
-  .srow .sright i { color: var(--green); font-style: normal; }
+  .chips { display: flex; gap: 8px; margin: 16px 0 12px; flex-wrap: wrap; }
+  .chip { border: 2px solid var(--line); background: var(--bg); color: var(--ink2); padding: 5px 14px; font: 700 11px var(--mono); cursor: pointer; letter-spacing: 1px; text-transform: uppercase; }
+  .chip.on { background: var(--yellow); color: #0c0d0a; }
+  .chip:not(.on):hover { background: var(--panel2); }
 
-  .chips { display: flex; gap: 22px; margin-bottom: 14px; flex-wrap: wrap; }
-  .chip { border: none; background: none; color: var(--dim2); padding: 4px 0; font: 600 11px var(--mono);
-    cursor: pointer; letter-spacing: 1.6px; text-transform: uppercase; border-bottom: 1px solid transparent; }
-  .chip.on { color: var(--accent); border-bottom-color: var(--accent); }
-  .chip:not(.on):hover { color: var(--dim); }
-
-  .tablewrap { overflow-x: auto; border-top: 1px solid var(--line); }
-  table { width: 100%; border-collapse: collapse; min-width: 820px; }
-  th { text-align: left; color: var(--dim2); font-size: 9.5px; text-transform: uppercase; letter-spacing: 2px; padding: 13px 14px 13px 0; border-bottom: 1px solid var(--hairline); font-weight: 600; }
-  td { padding: 13px 14px 13px 0; border-bottom: 1px solid var(--hairline); font-size: 12.5px; }
-  tbody tr { opacity: 0; animation: rowin .4s ease forwards; }
-  @keyframes rowin { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
-  tbody tr:hover td { background: rgba(255,255,255,.012); }
-  tr.first td:first-child { box-shadow: inset 2px 0 0 var(--accent); padding-left: 12px; }
-  .rank { font-family: var(--serif); color: var(--dim2); font-size: 15px; font-weight: 550; }
-  tr.first .rank { color: var(--accent); }
-  .hname { font-weight: 600; font-size: 12.5px; color: var(--text); }
-  .mod { color: var(--dim2); font-size: 10px; }
-  .tiertag { color: var(--dim2); font-size: 9.5px; letter-spacing: 1px; }
-  .pill { padding: 2px 0; font-size: 12px; font-weight: 600; }
-  .pass { color: var(--green); } .part { color: var(--amber); } .fail { color: var(--red); }
-  .scoreCell { color: var(--accent); font-weight: 700; }
-  .empty { border: 1px dashed var(--line); padding: 50px; text-align: center; color: var(--dim); line-height: 2.2; }
-  code.blk { display: inline-block; background: var(--panel); border: 1px solid var(--hairline); padding: 10px 16px; color: var(--text); font-size: 11.5px; margin-top: 10px; max-width: 100%; overflow-x: auto; }
+  .tablewrap { overflow-x: auto; border: 2px solid var(--line); background: var(--panel); }
+  table { width: 100%; border-collapse: collapse; min-width: 860px; }
+  th { text-align: left; background: var(--ink); color: var(--bg); font-size: 10px; text-transform: uppercase; letter-spacing: 1.6px; padding: 8px 12px; font-weight: 800; }
+  td { padding: 11px 12px; border-bottom: 1px dashed var(--ink3); font-size: 12px; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr { opacity: 0; animation: rowin .35s ease forwards; }
+  @keyframes rowin { from { opacity: 0; } to { opacity: 1; } }
+  tbody tr:hover td { background: var(--panel2); }
+  tr.first td { background: rgba(255,214,10,.05); }
+  tr.first td:first-child { box-shadow: inset 3px 0 0 var(--yellow); }
+  .rank { font-weight: 800; color: var(--ink3); }
+  tr.first .rank { color: var(--yellow); }
+  .hname { font-weight: 700; color: var(--ink); }
+  .mod { color: var(--ink3); font-size: 10px; }
+  .tiertag { font-size: 9px; padding: 2px 6px; font-weight: 800; letter-spacing: 1px; }
+  .t1tag { background: var(--panel2); color: var(--ink2); border: 1px solid var(--ink3); }
+  .t2tag { background: var(--purple); color: #0c0d0a; }
+  .pill { padding: 2px 8px; font-size: 11px; font-weight: 800; }
+  .pass { background: var(--green2); color: #eaffea; }
+  .part { background: var(--amber); color: #1a1206; }
+  .fail { background: var(--red); color: #fff; }
+  .scoreCell { color: var(--green); font-weight: 800; text-shadow: 0 0 10px rgba(43,217,76,.4); }
+  .empty { border: 2px dashed var(--ink3); padding: 44px; text-align: center; color: var(--ink2); line-height: 2.2; }
+  code.blk { display: inline-block; background: var(--bg); border: 1px dashed var(--ink3); padding: 9px 14px; color: var(--green); font-size: 11px; margin-top: 10px; max-width: 100%; overflow-x: auto; }
 
   /* race */
-  .racebar { display: flex; gap: 12px; align-items: center; margin-bottom: 22px; flex-wrap: wrap; }
-  select, .btn { background: var(--panel); color: var(--text); border: 1px solid var(--line); padding: 11px 13px; font: 600 11.5px var(--mono); cursor: pointer; max-width: 330px; border-radius: 0; }
-  .btn.go { background: var(--accent); color: #100f0d; border-color: var(--accent); padding: 11px 30px; letter-spacing: 2px; font-weight: 700; }
-  .btn.go:hover { filter: brightness(1.1); }
-  .vs { font-family: var(--serif); font-style: italic; font-size: 20px; color: var(--dim2); }
+  .racebar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+  select, .btn { background: var(--bg); color: var(--ink); border: 2px solid var(--line); padding: 10px 12px; font: 700 12px var(--mono); cursor: pointer; max-width: 330px; border-radius: 0; }
+  .btn.go { background: var(--yellow); color: #0c0d0a; padding: 10px 30px; letter-spacing: 2px; }
+  .btn.go:hover { background: #ffe14d; }
+  .vs { font-weight: 800; font-size: 15px; color: var(--red); }
   .lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media (max-width: 920px) { .lanes { grid-template-columns: 1fr; } }
-  .lane { background: var(--panel); border: 1px solid var(--hairline); overflow: hidden; position: relative; transition: border-color .3s; }
-  .lane.winner { border-color: var(--accent); }
-  .lanehead { display: flex; justify-content: space-between; align-items: center; padding: 13px 18px; border-bottom: 1px solid var(--hairline); }
-  .lanehead .who { font-family: var(--serif); font-size: 18px; font-weight: 500; }
-  .clock { font-size: 21px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
-  .progress { height: 2px; background: var(--panel2); }
-  .progress i { display: block; height: 100%; width: 0%; background: var(--accent); transition: width .12s linear; }
-  .term { height: 330px; overflow-y: auto; padding: 14px 18px; font-size: 11px; line-height: 1.85; background: #131110; }
-  .term .out { color: #a8a298; } .term .err { color: var(--amber); opacity: .8; }
-  .term .sys { color: var(--accent); font-weight: 600; }
-  .finish { padding: 13px 18px; border-top: 1px solid var(--hairline); font-weight: 500; font-size: 14px; min-height: 46px; font-family: var(--serif); }
-  .confetti { position: absolute; width: 6px; height: 6px; top: -10px; z-index: 5; animation: fall linear forwards; }
+  .lane { border: 2px solid var(--line); background: var(--panel); overflow: hidden; position: relative; }
+  .lane.winner { border-color: var(--yellow); box-shadow: 0 0 0 2px var(--yellow), 0 0 30px rgba(255,214,10,.25); }
+  .lanehead { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; background: var(--ink); color: var(--bg); }
+  .lanehead .who { font-weight: 800; font-size: 13px; letter-spacing: .5px; }
+  .clock { font-size: 18px; font-weight: 800; color: var(--green2); font-variant-numeric: tabular-nums; }
+  .lane.winner .lanehead .clock { color: var(--green2); }
+  .progress { height: 6px; background: var(--bg); border-bottom: 2px solid var(--line); }
+  .progress i { display: block; height: 100%; width: 0%; background: var(--green); box-shadow: 0 0 10px rgba(43,217,76,.6); transition: width .12s linear; }
+  .term { height: 320px; overflow-y: auto; padding: 12px 14px; font-size: 11px; line-height: 1.85; background: #0a0b08; }
+  .term .out { color: #9ba88f; } .term .err { color: var(--amber); opacity: .85; }
+  .term .sys { color: var(--green); font-weight: 700; }
+  .finish { padding: 11px 14px; border-top: 2px solid var(--line); font-weight: 800; font-size: 13px; min-height: 44px; }
+  .confetti { position: absolute; width: 7px; height: 7px; top: -10px; z-index: 5; animation: fall linear forwards; }
   @keyframes fall { to { transform: translateY(560px) rotate(720deg); opacity: 0; } }
 
   /* tasks / about */
-  .tierline { color: var(--dim2); font-size: 11px; letter-spacing: .5px; margin-bottom: 20px; }
-  .tierline b { color: var(--accent); font-weight: 600; }
-  .taskgrid { border-top: 1px solid var(--line); }
-  .task { padding: 24px 0 22px; border-bottom: 1px solid var(--hairline); display: grid; grid-template-columns: 220px 1fr; gap: 24px; }
-  @media (max-width: 720px) { .task { grid-template-columns: 1fr; } }
-  .task h3 { color: var(--text); font-size: 20px; font-family: var(--serif); font-weight: 480; }
-  .task h3 .t2 { color: var(--accent); font-family: var(--mono); font-size: 9.5px; letter-spacing: 2px; margin-left: 8px; vertical-align: 4px; }
-  .task p { color: var(--dim); font-size: 12px; line-height: 1.9; }
-  .task .n { color: var(--green); font-weight: 600; }
-  .runown { margin-top: 26px; padding-top: 22px; }
-  .runown h3 { font-family: var(--serif); font-style: italic; font-size: 24px; color: var(--text); margin-bottom: 10px; font-weight: 400; }
-  .runown p { color: var(--dim); font-size: 12px; line-height: 1.9; max-width: 700px; }
-  .about { color: var(--dim); font-size: 13px; line-height: 2.05; max-width: 720px; }
-  .about h3 { font-family: var(--serif); font-style: italic; font-weight: 420; color: var(--text); margin: 30px 0 10px; font-size: 23px; }
-  .about b { color: var(--text); font-weight: 600; }
-  .about .ac { color: var(--accent); }
-  footer { margin-top: 80px; color: var(--dim2); font-size: 10.5px; border-top: 1px solid var(--hairline); padding-top: 22px; line-height: 2.1; letter-spacing: .5px; }
-  footer b { color: var(--dim); }
+  .tierline { border: 2px solid var(--line); background: var(--panel2); font-size: 11px; padding: 7px 12px; margin-bottom: 14px; color: var(--ink2); }
+  .tierline b { color: var(--yellow); }
+  .taskgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 860px) { .taskgrid { grid-template-columns: 1fr; } }
+  .task { border: 2px solid var(--line); background: var(--panel); padding: 16px; }
+  .task h3 { color: var(--ink); font-size: 15px; font-weight: 800; margin-bottom: 8px; }
+  .task h3 .t2 { background: var(--purple); color: #0c0d0a; font-size: 9px; letter-spacing: 1.5px; padding: 2px 7px; margin-left: 8px; vertical-align: 2px; }
+  .task p { color: var(--ink2); font-size: 11.5px; line-height: 1.85; }
+  .task .n { color: var(--green); font-weight: 700; }
+  .runown { margin-top: 14px; border: 2px solid var(--line); background: var(--panel); padding: 16px; }
+  .runown h3 { font-size: 15px; font-weight: 800; color: var(--yellow); margin-bottom: 8px; }
+  .runown p { color: var(--ink2); font-size: 11.5px; line-height: 1.85; max-width: 760px; }
+  .about { color: var(--ink2); font-size: 12.5px; line-height: 2; max-width: 760px; }
+  .about h3 { color: var(--bg); background: var(--ink); display: inline-block; padding: 4px 12px; margin: 26px 0 10px; font-size: 12px; letter-spacing: 2px; font-weight: 800; text-transform: uppercase; }
+  .about b { color: var(--ink); }
+  .about .ac { color: var(--green); }
+  footer { margin-top: 70px; color: var(--ink3); font-size: 10.5px; border-top: 2px solid var(--line); padding-top: 18px; line-height: 2.1; }
+  footer b { color: var(--ink2); }
 
   /* video overlays */
-  #cap { position: fixed; left: 50%; bottom: 44px; transform: translateX(-50%); z-index: 999;
-    background: rgba(16,15,13,.95); border: 1px solid var(--accent); color: var(--text);
-    font: 500 19px var(--serif); padding: 15px 28px; max-width: 86vw; text-align: center; display: none; }
+  #cap { position: fixed; left: 50%; bottom: 42px; transform: translateX(-50%); z-index: 999;
+    background: var(--bg); border: 2px solid var(--yellow); color: var(--ink);
+    font: 700 16px var(--mono); padding: 13px 24px; max-width: 86vw; text-align: center; display: none; }
   #intro { position: fixed; inset: 0; z-index: 1000; background: var(--bg); display: none;
     flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 6vw; }
-  #intro .big { font-family: var(--serif); font-style: italic; font-weight: 380; font-size: clamp(34px, 5.2vw, 62px); line-height: 1.3; max-width: 960px; }
-  #intro .big em { color: var(--accent); font-style: italic; }
-  #intro .sub { margin-top: 28px; color: var(--dim2); font: 600 12px var(--mono); letter-spacing: 3px; text-transform: uppercase; }
+  #intro .big { font: 700 clamp(26px, 4.2vw, 46px)/1.45 var(--mono); max-width: 980px; }
+  #intro .big em { color: var(--green); font-style: normal; text-shadow: 0 0 16px rgba(43,217,76,.5); }
+  #intro .sub { margin-top: 26px; color: var(--ink2); font: 700 12px var(--mono); letter-spacing: 3px; text-transform: uppercase; }
 </style>
 </head>
 <body>
-<div class="grain"></div>
+<div class="crt"></div>
 <div class="ticker"><span id="tickerSpan"></span></div>
 <div id="cap"></div>
 <div id="intro"><div class="big" id="introBig"></div><div class="sub" id="introSub"></div></div>
@@ -177,8 +189,14 @@
 <div class="wrap">
   <header>
     <div class="mhrow">
-      <h1 class="logo">Harness<span class="it">Arena</span></h1>
-      <div class="kicker">Built in London <em>&middot;</em> Live board <em>&middot;</em> Real runs only</div>
+      <div class="brand">
+        <span class="chipname">HARNESSARENA<span class="blink">_</span></span>
+        <span class="sub">(harness-arena) &middot; race your AI setup</span>
+      </div>
+      <div class="hright">
+        <a href="https://github.com/kitfunso/harness-arena" target="_blank" rel="noopener">repo</a>
+        <span class="live">&#9679; <span id="liveclock">--:--:--</span></span>
+      </div>
     </div>
     <nav>
       <button class="on" data-v="board">ARENA</button>
@@ -197,10 +215,10 @@
         <div id="boardWrap"></div>
       </div>
       <aside class="brail">
-        <div id="stats"></div>
-        <div class="pull">Have you ever wondered if you're using AI the best way you could?</div>
-        <div class="railcopy">Your harness is <b>your whole setup</b>: skills, CLAUDE.md, AGENTS.md, hooks, MCP servers, prompt and output tricks. Same model, same task: <span class="ac">the setup decides.</span> Hidden test suites, real recorded runs, a rating on the difference.</div>
-        <div class="railenter"><div class="rk">ENTER THE ARENA</div><code>node runner/run.mjs --task tasks/debug-cart --harness my-setup --owner mygithub --x myhandle --submit --cmd "..."</code></div>
+        <div class="box"><div class="boxhead"><span>LIVE STATS</span><span>///</span></div><div class="boxbody" id="stats"></div></div>
+        <div class="box"><div class="boxhead"><span>THE QUESTION</span><span>(?)</span></div><div class="boxbody pull">Have you ever wondered if you're using AI <em>the best way you could?</em></div></div>
+        <div class="box"><div class="boxhead"><span>WHAT'S A HARNESS</span><span>///</span></div><div class="boxbody railcopy">Your harness is <b>your whole setup</b>: skills, CLAUDE.md, AGENTS.md, hooks, MCP servers, prompt and output tricks. Same model, same task: <span class="ac">the setup decides.</span> Hidden test suites. Real recorded runs.</div></div>
+        <div class="box"><div class="boxhead"><span>ENTER THE ARENA</span><span>&gt;_</span></div><div class="boxbody railenter" style="padding-top:10px"><code>node runner/run.mjs --task tasks/debug-cart --harness my-setup --owner mygithub --x myhandle --submit --cmd "..."</code></div></div>
       </aside>
     </div>
   </section>
@@ -208,10 +226,10 @@
   <section id="race" class="view">
     <div class="racebar">
       <select id="raceA"></select>
-      <span class="vs">vs</span>
+      <span class="vs">VS</span>
       <select id="raceB"></select>
-      <button class="btn go" id="raceGo">RACE</button>
-      <select id="speed" style="max-width:88px">
+      <button class="btn go" id="raceGo">RACE &gt;&gt;</button>
+      <select id="speed" style="max-width:86px">
         <option value="4">4x</option>
         <option value="16" selected>16x</option>
         <option value="64">64x</option>
@@ -232,17 +250,17 @@
   </section>
 
   <section id="tasks" class="view">
-    <div class="tierline"><b>Tier 1</b> calibration katas weigh 1.0x &middot; <b>Tier 2</b> debugging weighs 1.5x &middot; T3 extend / T4 build are next: see FORMAT</div>
+    <div class="tierline"><b>TIER 1</b> calibration katas weigh 1.0x &middot; <b>TIER 2</b> debugging weighs 1.5x &middot; T3 extend / T4 build are next: see FORMAT</div>
     <div class="taskgrid">
       <div class="task"><h3>csv-parser</h3><p>Spec-complete CSV parsing: quoted fields, escaped quotes, embedded commas and newlines, CRLF, trailing-newline semantics. <span class="n">10 hidden tests.</span></p></div>
       <div class="task"><h3>rate-limiter</h3><p>Sliding-window limiter with exact boundary semantics; rejected requests must not extend the window. <span class="n">8 hidden tests.</span></p></div>
       <div class="task"><h3>md-table</h3><p>GitHub-flavored markdown tables: column union in first-seen order, exact padding and alignment. <span class="n">6 hidden tests.</span></p></div>
-      <div class="task"><h3>debug-cart<span class="t2">TIER 2</span></h3><p>A three-file cart module ships with planted bugs and failing visible tests. Diagnose and fix with minimal edits: boundary semantics, missing defaults, formatting. Measures navigation and recovery, not just generation. <span class="n">12 hidden tests.</span></p></div>
+      <div class="task"><h3>debug-cart<span class="t2">TIER 2</span></h3><p>A three-file cart module ships with planted bugs and failing visible tests. Diagnose and fix with minimal edits. Measures navigation and recovery, not just generation. <span class="n">12 hidden tests.</span></p></div>
     </div>
     <div class="runown">
-      <h3>Race your own harness</h3>
-      <p>Any CLI agent works: Codex, Claude Code, your custom scaffold with your skills, CLAUDE.md and hooks. The runner sandboxes the task workspace, timestamps every output line into a replayable trace, then scores against the hidden suite the agent never sees. Add your handles to get on the board.</p>
-      <code class="blk">node runner/run.mjs --task tasks/debug-cart --harness my-setup --owner mygithub --x myhandle --cmd "codex exec --full-auto {prompt}"</code>
+      <h3>RACE YOUR OWN HARNESS</h3>
+      <p>Any CLI agent works: Codex, Claude Code, your custom scaffold with your skills, CLAUDE.md and hooks. The runner sandboxes the task workspace, timestamps every output line into a replayable trace, then scores against the hidden suite the agent never sees. Add your handles, --submit, and you're on the live board.</p>
+      <code class="blk">node runner/run.mjs --task tasks/debug-cart --harness my-setup --owner mygithub --x myhandle --submit --cmd "codex exec --full-auto {prompt}"</code>
     </div>
   </section>
 
@@ -250,7 +268,7 @@
     <div class="about">
       <h3>What counts as a harness</h3>
       <p>Everything that is yours around the model: your skills and slash commands, your CLAUDE.md / AGENTS.md, your hooks, your MCP servers, your prompt style, even output tricks like single-file HTML. Same model, same task: two participants get different results because their setups differ. That difference is what we measure.</p>
-      <h3>Arena Rating</h3>
+      <h3>Arena rating</h3>
       <p>Each run is scored 0-1000 against the best agent run on the same task, and <b>quality gates everything</b>: score = 1000 &times; pass-rate &times; (0.5 + 0.25 speed + 0.15 token economy + 0.10 output economy). Speed is wall-clock vs the fastest run; tokens are counted as the vendor reports them (cache included, ~estimated when unreported); chattiness costs you. A fast failure scores zero. Your harness rating is the <span class="ac">tier-weighted sum</span> of its best run per task: Tier 1 katas weigh 1.0x, Tier 2 debugging weighs 1.5x. Coverage counts. Elo-style head-to-head updates take over once the field is large enough.</p>
       <h3>The task ladder</h3>
       <p><b>T1 calibration katas</b>: precision spec-following with hidden edge cases. <b>T2 debug</b> (live today): a repo with planted bugs and failing visible tests - diagnosis and recovery. <b>T3 extend</b>: add a feature without breaking hidden regression tests - context handling. <b>T4 build</b>: make a broken project run - the full tool loop. Higher tiers weigh more. Sealed per-event suites and parameterized task generators keep the ladder unmemorizable.</p>
@@ -271,6 +289,9 @@ const HUMAN = 'reference-human';
 const TASK_TIER = { 'csv-parser': 1, 'rate-limiter': 1, 'md-table': 1, 'debug-cart': 2 };
 const TIER_WEIGHT = { 1: 1.0, 2: 1.5, 3: 2.0, 4: 2.5 };
 const tierOf = t => TASK_TIER[t] ?? 1;
+const MAX_RATING = 3 * 1000 + 1 * 1500;
+
+setInterval(() => { $('liveclock').textContent = new Date().toTimeString().slice(0, 8); }, 1000);
 
 document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
   document.querySelectorAll('nav button').forEach(x => x.classList.remove('on'));
@@ -292,12 +313,9 @@ function countUp(el, target, suffix = '', decimals = 0) {
   })(t0);
 }
 
-/* tokens: reported by the agent when available, else estimated from output bytes (~4 chars/token) */
 const tokOf = r => r.tokensReported ?? Math.max(1, Math.round(r.outputBytes / 4));
 const tokLabel = r => r.tokensReported ? r.tokensReported.toLocaleString() : '~' + tokOf(r).toLocaleString();
 
-/* Arena Rating: per run, metrics normalized against the best agent run on the same task.
-   Quality gates everything; entry rating = tier-weighted sum of best run per task. */
 function computeRunScores() {
   const agents = RUNS.filter(r => r.harness !== HUMAN);
   const byTask = {};
@@ -335,7 +353,7 @@ function computeStandings() {
 }
 
 function handleHTML(e) {
-  let h = e.owner ? `<a href="https://github.com/${e.owner}" target="_blank" rel="noopener">github/${e.owner}</a>` : '<span style="color:var(--dim2)">anonymous</span>';
+  let h = e.owner ? `<a href="https://github.com/${e.owner}" target="_blank" rel="noopener">github/${e.owner}</a>` : '<span style="color:var(--ink3)">anonymous</span>';
   if (e.x) h += ` &nbsp;<a href="https://x.com/${e.x}" target="_blank" rel="noopener">x/${e.x}</a>`;
   return h;
 }
@@ -347,10 +365,10 @@ function renderStats() {
   const fastestPerfect = RUNS.filter(r => r.score === 1 && r.harness !== HUMAN)
     .reduce((a, b) => !a || b.durationMs < a.durationMs ? b : a, null);
   $('stats').innerHTML = `
-    <div class="stat"><div class="k">Recorded runs</div><div class="v" data-n="${RUNS.length}"></div></div>
-    <div class="stat"><div class="k">Harnesses</div><div class="v" data-n="${harnesses.length}"></div></div>
-    <div class="stat"><div class="k">Top arena rating</div><div class="v ac" data-n="${top ? top.rating : 0}"></div></div>
-    <div class="stat"><div class="k">Fastest agent clear</div><div class="v" data-s="${fastestPerfect ? (fastestPerfect.durationMs/1000).toFixed(1) : ''}"></div></div>`;
+    <div class="stat"><span class="k">Recorded runs</span><span class="v" data-n="${RUNS.length}"></span></div>
+    <div class="stat"><span class="k">Harnesses</span><span class="v" data-n="${harnesses.length}"></span></div>
+    <div class="stat"><span class="k">Top rating</span><span class="v ac" data-n="${top ? top.rating : 0}"></span></div>
+    <div class="stat"><span class="k">Fastest clear</span><span class="v ac" data-s="${fastestPerfect ? (fastestPerfect.durationMs/1000).toFixed(1) : ''}"></span></div>`;
   document.querySelectorAll('.stat .v').forEach(el => {
     if (el.dataset.n) countUp(el, Number(el.dataset.n));
     else if (el.dataset.s) countUp(el, Number(el.dataset.s), 's', 1);
@@ -372,14 +390,17 @@ function renderPodium() {
     $('humanline').innerHTML = `HUMAN BASELINE &middot; <b>reference-human</b> cleared ${h.length} tasks, 100% pass, ${fmtS(ht)} total &middot; unrated &middot; the bar`;
   }
   $('podium').innerHTML = ranked.map((a, i) => `
-    <div class="srow ${i === 0 ? 'lead' : ''}">
-      <div class="rating">${a.rating}</div>
+    <div class="srow">
       <div>
-        <div class="nm">${a.harness}</div>
+        <div class="nm">${a.harness}${i === 0 ? '<span class="champ">CHAMPION</span>' : ''}</div>
         <div class="handles">${handleHTML(a)}</div>
         <div class="setup">${a.setup || ''}</div>
       </div>
-      <div class="sright">${a.model || ''}<br><i>${(a.scoreSum / a.runs * 100).toFixed(0)}% pass</i> &middot; ${a.covered}/${a.nTasks} tasks &middot; avg ${fmtS(a.timeSum / a.runs)}</div>
+      <div class="scorecol">
+        <div class="rating">${a.rating}</div>
+        <div class="rbar"><i style="--w:${Math.min(100, a.rating / MAX_RATING * 100)}%"></i></div>
+        <div class="meta2"><i>${(a.scoreSum / a.runs * 100).toFixed(0)}%</i> &middot; ${a.covered}/${a.nTasks} tasks &middot; ${a.model || ''}</div>
+      </div>
     </div>`).join('');
 }
 
@@ -400,15 +421,15 @@ function renderBoard() {
   }
   computeRunScores();
   $('boardWrap').innerHTML = `<div class="tablewrap"><table><thead><tr>
-    <th>#</th><th>Harness</th><th>Participant</th><th>Task</th><th>Hidden tests</th><th>Run score</th><th>Time</th><th>Tokens</th><th>Output</th>
+    <th>#</th><th>Harness</th><th>Participant</th><th>Task</th><th>Tests</th><th>Score</th><th>Time</th><th>Tokens</th><th>Output</th>
   </tr></thead><tbody>` + rows.map((r, i) => `
-    <tr class="${i === 0 ? 'first' : ''}" style="animation-delay:${i * 50}ms">
+    <tr class="${i === 0 ? 'first' : ''}" style="animation-delay:${i * 45}ms">
       <td class="rank">${i + 1}</td>
       <td><span class="hname">${r.harness}</span><br><span class="mod">${r.model || ''}</span></td>
-      <td style="font-size:11px;color:var(--dim)">${r.harness === HUMAN ? '<span style="color:var(--dim2)">baseline</span>' : (r.owner ? '@' + r.owner + (r.x ? ' &middot; x/' + r.x : '') : 'anonymous')}</td>
-      <td>${r.task}<br><span class="tiertag">TIER ${tierOf(r.task)}</span></td>
+      <td style="font-size:10.5px;color:var(--ink2)">${r.harness === HUMAN ? '<span style="color:var(--ink3)">baseline</span>' : (r.owner ? '@' + r.owner + (r.x ? ' &middot; x/' + r.x : '') : 'anonymous')}</td>
+      <td>${r.task} <span class="tiertag ${tierOf(r.task) === 2 ? 't2tag' : 't1tag'}">T${tierOf(r.task)}</span></td>
       <td>${pillFor(r)}</td>
-      <td>${r.harness === HUMAN ? '<span style="color:var(--dim2)">unrated</span>' : `<span class="scoreCell">${r.runScore}</span>`}</td>
+      <td>${r.harness === HUMAN ? '<span style="color:var(--ink3)">unrated</span>' : `<span class="scoreCell">${r.runScore}</span>`}</td>
       <td>${fmtS(r.durationMs)}</td>
       <td>${r.harness === HUMAN ? '-' : tokLabel(r)}</td>
       <td>${fmtKB(r.outputBytes)}</td>
@@ -429,7 +450,7 @@ let raceTimers = [];
 async function loadTrace(id) { return (await fetch(`data/traces/${id}.json`)).json(); }
 
 function burstConfetti(lane) {
-  const colors = ['#ff5a1f', '#ece8df', '#4cb963', '#c9a227'];
+  const colors = ['#ffd60a', '#2bd94c', '#ff4b1f', '#d9d6c8'];
   for (let i = 0; i < 60; i++) {
     const c = document.createElement('div');
     c.className = 'confetti';
@@ -502,7 +523,6 @@ window.arenaIntro = (big, sub) => {
 
 (async () => {
   try { RUNS = await (await fetch('data/runs.json')).json(); } catch { RUNS = []; }
-  // community submissions: merged from Supabase when data/supabase.json is configured; silent otherwise
   try {
     const cfg = await (await fetch('data/supabase.json')).json();
     if (cfg.url && cfg.anon) {
