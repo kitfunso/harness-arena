@@ -120,5 +120,20 @@ const runs = existsSync(runsPath) ? JSON.parse(readFileSync(runsPath, 'utf8')) :
 runs.push(run);
 writeFileSync(runsPath, JSON.stringify(runs, null, 1));
 
+// --submit: push the run to the community board (needs data/supabase.json with {url, anon})
+if (process.argv.includes('--submit')) {
+  try {
+    const cfg = JSON.parse(readFileSync(join(root, 'data', 'supabase.json'), 'utf8'));
+    const res = await fetch(`${cfg.url}/rest/v1/runs`, {
+      method: 'POST',
+      headers: { apikey: cfg.anon, Authorization: `Bearer ${cfg.anon}`, 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates' },
+      body: JSON.stringify({ id: run.id, payload: run }),
+    });
+    console.log(`[arena] community submit: ${res.ok ? 'OK' : 'HTTP ' + res.status}`);
+  } catch (e) {
+    console.log(`[arena] community submit failed: ${e.message}`);
+  }
+}
+
 console.log(`[arena] DONE ${task} ${harness}: ${passed}/${total} in ${(durationMs / 1000).toFixed(1)}s (exit ${exitCode})`);
 console.log(testOut.trim());

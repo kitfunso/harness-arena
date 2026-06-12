@@ -2,6 +2,8 @@
 
 **Same task. Same hidden test suite. Different harness. Who actually ships?**
 
+Live board: **https://harness-arena-three.vercel.app** &middot; Demo video: [/video/harness-arena-demo.mp4](https://harness-arena-three.vercel.app/video/harness-arena-demo.mp4)
+
 Benchmarks rank models. But in 2026 the *harness* - the prompts, tool loop, scaffolding, and recovery
 logic wrapped around the model - moves agentic pass rates as much as the model does, and every public
 leaderboard hides it. HarnessArena makes the harness the unit of competition.

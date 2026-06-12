@@ -1,4 +1,5 @@
-// Records the demo video: title-card hook, then a scripted tour of the live arena.
+// Demo video v3: title-card hook, continuous-motion tour, two races, repo proof beat, URL close.
+// Paced in chapters so a voiceover can ride on top.
 import { createRequire } from 'node:module';
 const require = createRequire('C:/Users/skf_s/AppData/Roaming/npm/node_modules/@playwright/mcp/');
 const { chromium } = require('playwright');
@@ -23,62 +24,89 @@ const pickRace = (sel, harness, task) => page.evaluate(([id, h, t]) => {
   const s = document.getElementById(id);
   s.selectedIndex = [...s.options].findIndex(o => o.text.includes(h) && o.text.includes(t));
 }, [sel, harness, task]);
+// slow continuous scroll so the frame is never static
+const glide = async (from, to, ms) => {
+  const steps = Math.max(1, Math.round(ms / 80));
+  for (let i = 1; i <= steps; i++) {
+    await page.evaluate(y => window.scrollTo(0, y), from + (to - from) * (i / steps));
+    await wait(80);
+  }
+};
 
 await page.goto(URL, { waitUntil: 'networkidle' });
 
-// 1. the hook: title cards on black
+// CH1 - the hook (0:00-0:12)
 await intro('Have you ever wondered...', '');
-await wait(2800);
+await wait(2600);
 await intro('Have you ever wondered... <em>am I using AI the best way I could?</em>', '');
-await wait(4200);
+await wait(4400);
 await intro('Same task. Same model. <em>A hundred ways to harness it.</em>', 'WE PUT A NUMBER ON THE DIFFERENCE');
-await wait(4200);
+await wait(4400);
 await intro('');
 
-// 2. hero
-await wait(2600);
-await cap('HarnessArena: real agent runs on hidden test suites. No synthetic rows.');
-await wait(4600);
+// CH2 - hero + stats, gliding (0:12-0:21)
+await wait(1800);
+await glide(0, 360, 2600);
+await cap('Real recorded runs. Live board. Built this afternoon.');
+await glide(360, 560, 2400);
+await wait(1800);
 
-// 3. standings + board
-await page.evaluate(() => window.scrollTo({ top: 620, behavior: 'smooth' }));
-await cap('Every setup gets an Arena Rating. Handles on the board. Real runs only.');
-await wait(6200);
-await page.evaluate(() => window.scrollTo({ top: 1150, behavior: 'smooth' }));
-await cap('Quality, speed, tokens, output: scored per run, tier-weighted overall.');
-await wait(5600);
+// CH3 - standings (0:21-0:33)
+await cap('Every setup gets an Arena Rating: quality, speed, tokens, output.');
+await glide(560, 1000, 4200);
+await wait(2200);
+await cap('Your skills, your CLAUDE.md, your hooks. The setup is the competitor.');
+await glide(1000, 1450, 3800);
+await wait(1600);
 
-// 4. race 1: codex low vs xhigh on csv-parser (defaults), 16x => ~8.3s
-await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+// CH4 - race 1: same model, two configs (0:33-0:50)
+await page.evaluate(() => window.scrollTo(0, 0));
 await tab('RACE REPLAY');
-await wait(800);
-await cap('Every number has a receipt. Replay any two runs head to head.');
+await wait(700);
+await cap('Same model: gpt-5.5. Two harness configs, head to head.');
 await page.click('#raceGo');
+await wait(3600);
+await cap('');
+await wait(4800);
+await cap('Both perfect. Low effort: 67 seconds. XHigh: 133. The harness decided.');
 await wait(5400);
-await cap('Both perfect: 10/10. But low effort took 67s. XHigh took 133s.');
-await wait(5400);
-await cap('The harness made the difference. Not the model.');
-await wait(4200);
 
-// 5. race 2: claude vs codex on the debug tier, 16x
+// CH5 - race 2: the debug tier (0:50-1:01)
 await pickRace('raceA', 'claude-code-haiku', 'debug-cart');
 await pickRace('raceB', 'codex-low-effort', 'debug-cart');
-await cap('Tier 2: debug a real module. Different tiers crown different setups.');
+await cap('Tier 2: debug a real module. Cross-vendor, replayed from the recorded traces.');
 await page.click('#raceGo');
-await wait(7500);
+await wait(2800);
+await cap('');
+await wait(4400);
+await cap('Every number on the board has a receipt.');
+await wait(3400);
 
-// 6. tasks
+// CH6 - tasks + how to enter (1:01-1:10)
 await tab('TASKS');
-await wait(600);
-await cap('Hidden suites the agent never sees. Bring your own harness: one command to enter.');
-await wait(6200);
+await wait(500);
+await cap('Hidden test suites the agents never see.');
+await glide(0, 320, 3000);
+await cap('Bring your own harness: one command to enter, handles on the board.');
+await glide(320, 620, 3200);
+await wait(1600);
 
-// 7. close
-await tab('ARENA');
-await page.evaluate(() => window.scrollTo({ top: 0 }));
-await wait(300);
-await intro('<em>HarnessArena.</em> Race what ships.', 'BUILT IN LONDON / JUNE 12 2026');
-await wait(4200);
+// CH7 - proof: open repo (1:10-1:16). GitHub has no arenaCaption, inject a bare overlay.
+await cap('');
+await page.goto('https://github.com/kitfunso/harness-arena', { waitUntil: 'domcontentloaded' });
+await wait(1200);
+await page.evaluate(txt => {
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;left:50%;bottom:44px;transform:translateX(-50%);z-index:99999;background:rgba(16,15,13,.95);border:1px solid #ff5a1f;color:#ece8df;font:500 19px Georgia,serif;padding:15px 28px;max-width:86vw;text-align:center';
+  d.textContent = txt;
+  document.body.appendChild(d);
+}, 'Open source. Every leaderboard row is a committed, replayable trace.');
+await wait(4600);
+
+// CH8 - close (1:16-1:24)
+await page.goto(URL, { waitUntil: 'networkidle' });
+await intro('<em>HarnessArena.</em> Race what ships.', 'HARNESS-ARENA-THREE.VERCEL.APP');
+await wait(4800);
 
 await ctx.close();
 const v = await page.video().path();

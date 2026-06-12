@@ -6,6 +6,7 @@
 <title>HarnessArena - race your AI coding harness</title>
 <meta property="og:title" content="HarnessArena">
 <meta property="og:description" content="Same model. Same task. A hundred ways to harness it. Real agent runs, ranked and replayable.">
+<meta property="og:image" content="https://harness-arena-three.vercel.app/og.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23100f0d'/><text y='.85em' x='8' font-size='80' fill='%23ff5a1f' font-family='Georgia' font-style='italic'>A</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -487,6 +488,20 @@ window.arenaIntro = (big, sub) => {
 
 (async () => {
   try { RUNS = await (await fetch('data/runs.json')).json(); } catch { RUNS = []; }
+  // community submissions: merged from Supabase when data/supabase.json is configured; silent otherwise
+  try {
+    const cfg = await (await fetch('data/supabase.json')).json();
+    if (cfg.url && cfg.anon) {
+      const res = await fetch(cfg.url + '/rest/v1/runs?select=payload', { headers: { apikey: cfg.anon, Authorization: 'Bearer ' + cfg.anon } });
+      if (res.ok) {
+        const rows = await res.json();
+        for (const row of rows) {
+          const p = row.payload;
+          if (p && p.id && p.harness && typeof p.score === 'number' && !RUNS.some(x => x.id === p.id)) RUNS.push(p);
+        }
+      }
+    }
+  } catch { /* no community backend configured */ }
   renderStats(); renderTicker(); renderPodium(); renderChips(); renderBoard(); fillRaceSelects();
 })();
 </script>
