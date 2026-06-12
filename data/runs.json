@@ -1,0 +1,50 @@
+[
+ {
+  "id": "csv-parser--reference-human--1781261691422",
+  "task": "csv-parser",
+  "harness": "reference-human",
+  "model": "human baseline",
+  "startedAt": "2026-06-12T10:54:51.422Z",
+  "durationMs": 59,
+  "passed": 10,
+  "total": 10,
+  "score": 1,
+  "exitCode": 0,
+  "outputBytes": 61,
+  "tokensReported": null,
+  "notes": "human reference solution, scripted apply",
+  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs"
+ },
+ {
+  "id": "rate-limiter--reference-human--1781261691566",
+  "task": "rate-limiter",
+  "harness": "reference-human",
+  "model": "human baseline",
+  "startedAt": "2026-06-12T10:54:51.566Z",
+  "durationMs": 55,
+  "passed": 8,
+  "total": 8,
+  "score": 1,
+  "exitCode": 0,
+  "outputBytes": 61,
+  "tokensReported": null,
+  "notes": "human reference solution, scripted apply",
+  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs"
+ },
+ {
+  "id": "md-table--reference-human--1781261691707",
+  "task": "md-table",
+  "harness": "reference-human",
+  "model": "human baseline",
+  "startedAt": "2026-06-12T10:54:51.707Z",
+  "durationMs": 61,
+  "passed": 6,
+  "total": 6,
+  "score": 1,
+  "exitCode": 0,
+  "outputBytes": 61,
+  "tokensReported": null,
+  "notes": "human reference solution, scripted apply",
+  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs"
+ }
+]

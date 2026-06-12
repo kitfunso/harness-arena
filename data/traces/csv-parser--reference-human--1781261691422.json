@@ -1,0 +1,30 @@
+{
+ "run": {
+  "id": "csv-parser--reference-human--1781261691422",
+  "task": "csv-parser",
+  "harness": "reference-human",
+  "model": "human baseline",
+  "startedAt": "2026-06-12T10:54:51.422Z",
+  "durationMs": 59,
+  "passed": 10,
+  "total": 10,
+  "score": 1,
+  "exitCode": 0,
+  "outputBytes": 61,
+  "tokensReported": null,
+  "notes": "human reference solution, scripted apply",
+  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs"
+ },
+ "events": [
+  {
+   "t": 48,
+   "s": "out",
+   "x": "reading task spec..."
+  },
+  {
+   "t": 50,
+   "s": "out",
+   "x": "reference solution applied to workspace"
+  }
+ ]
+}

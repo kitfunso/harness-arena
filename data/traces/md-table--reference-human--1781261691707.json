@@ -1,0 +1,30 @@
+{
+ "run": {
+  "id": "md-table--reference-human--1781261691707",
+  "task": "md-table",
+  "harness": "reference-human",
+  "model": "human baseline",
+  "startedAt": "2026-06-12T10:54:51.707Z",
+  "durationMs": 61,
+  "passed": 6,
+  "total": 6,
+  "score": 1,
+  "exitCode": 0,
+  "outputBytes": 61,
+  "tokensReported": null,
+  "notes": "human reference solution, scripted apply",
+  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs"
+ },
+ "events": [
+  {
+   "t": 49,
+   "s": "out",
+   "x": "reading task spec..."
+  },
+  {
+   "t": 51,
+   "s": "out",
+   "x": "reference solution applied to workspace"
+  }
+ ]
+}

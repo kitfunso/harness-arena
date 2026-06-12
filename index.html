@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HarnessArena - benchmark your AI coding harness</title>
+<style>
+  :root {
+    --bg: #07090d; --panel: #0d1117; --panel2: #11161d; --border: #1c2530;
+    --text: #d7e0ea; --dim: #6b7888; --cyan: #22d3ee; --violet: #a78bfa;
+    --green: #34d399; --amber: #fbbf24; --red: #f87171;
+    --mono: ui-monospace, 'Cascadia Code', 'SF Mono', Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--text); font-family: var(--mono);
+    min-height: 100vh;
+    background-image:
+      linear-gradient(rgba(34,211,238,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,211,238,.025) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px 80px; }
+  header { padding: 38px 0 10px; }
+  .logo { font-size: 30px; font-weight: 700; letter-spacing: 1px; }
+  .logo .h { color: var(--text); }
+  .logo .a {
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .tagline { color: var(--dim); margin-top: 8px; font-size: 14px; max-width: 720px; line-height: 1.6; }
+  .tagline b { color: var(--cyan); font-weight: 600; }
+  nav { display: flex; gap: 6px; margin: 26px 0 22px; border-bottom: 1px solid var(--border); }
+  nav button {
+    background: none; border: none; color: var(--dim); font: 600 13px var(--mono);
+    padding: 10px 16px; cursor: pointer; border-bottom: 2px solid transparent; letter-spacing: .5px;
+  }
+  nav button.on { color: var(--cyan); border-bottom-color: var(--cyan); }
+  nav button:hover { color: var(--text); }
+  .view { display: none; } .view.on { display: block; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 26px; }
+  .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .stat .k { color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; }
+  .stat .v { font-size: 30px; font-weight: 700; margin-top: 6px; }
+  .stat .v.grad {
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .chips { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .chip {
+    border: 1px solid var(--border); background: var(--panel); color: var(--dim);
+    border-radius: 999px; padding: 6px 14px; font: 600 12px var(--mono); cursor: pointer;
+  }
+  .chip.on { color: var(--bg); background: var(--cyan); border-color: var(--cyan); }
+  table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  th { text-align: left; color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--panel2); }
+  tr.first td { background: linear-gradient(90deg, rgba(34,211,238,.08), rgba(167,139,250,.08)); }
+  .rank { font-weight: 700; color: var(--dim); }
+  tr.first .rank { color: var(--cyan); }
+  .hname { font-weight: 700; }
+  .mod { color: var(--dim); font-size: 12px; }
+  .pill { border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 700; }
+  .pass { background: rgba(52,211,153,.12); color: var(--green); }
+  .part { background: rgba(251,191,36,.12); color: var(--amber); }
+  .fail { background: rgba(248,113,113,.12); color: var(--red); }
+  .bar { height: 5px; border-radius: 3px; background: var(--border); width: 110px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--cyan), var(--violet)); }
+  .empty { border: 1px dashed var(--border); border-radius: 12px; padding: 44px; text-align: center; color: var(--dim); line-height: 2; }
+  code.blk { display: inline-block; background: var(--panel2); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; color: var(--cyan); font-size: 12px; margin-top: 8px; }
+  /* race */
+  .racebar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+  select, .btn {
+    background: var(--panel); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 9px 12px; font: 600 13px var(--mono); cursor: pointer;
+  }
+  .btn.go { background: linear-gradient(90deg, var(--cyan), var(--violet)); color: #04121a; border: none; padding: 9px 22px; }
+  .lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 900px) { .lanes { grid-template-columns: 1fr; } }
+  .lane { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .lane.winner { border-color: var(--cyan); box-shadow: 0 0 24px rgba(34,211,238,.18); }
+  .lanehead { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--panel2); }
+  .clock { font-size: 20px; font-weight: 700; color: var(--cyan); font-variant-numeric: tabular-nums; }
+  .term { height: 360px; overflow-y: auto; padding: 12px 16px; font-size: 11.5px; line-height: 1.75; }
+  .term .out { color: #9fb2c8; } .term .err { color: var(--amber); }
+  .term .sys { color: var(--violet); font-weight: 700; }
+  .finish { padding: 11px 16px; border-top: 1px solid var(--border); font-weight: 700; font-size: 13px; min-height: 42px; }
+  .task { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 14px; }
+  .task h3 { color: var(--cyan); margin-bottom: 8px; font-size: 16px; }
+  .task p { color: var(--dim); font-size: 13.5px; line-height: 1.7; }
+  .about { color: var(--dim); font-size: 14px; line-height: 1.9; max-width: 780px; }
+  .about h3 { color: var(--text); margin: 22px 0 8px; }
+  .about b { color: var(--cyan); }
+  footer { margin-top: 60px; color: var(--dim); font-size: 12px; border-top: 1px solid var(--border); padding-top: 18px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><span class="h">HARNESS</span><span class="a">ARENA</span></div>
+    <div class="tagline">Same task. Same hidden test suite. <b>Different harness.</b> Benchmarks rank models; swapping the harness around a model can move pass rates more than swapping the model. We race real agent setups head-to-head and rank what actually ships.</div>
+  </header>
+
+  <nav>
+    <button class="on" data-v="board">LEADERBOARD</button>
+    <button data-v="race">RACE REPLAY</button>
+    <button data-v="tasks">TASKS</button>
+    <button data-v="about">FORMAT</button>
+  </nav>
+
+  <section id="board" class="view on">
+    <div class="cards" id="stats"></div>
+    <div class="chips" id="taskChips"></div>
+    <div id="boardWrap"></div>
+  </section>
+
+  <section id="race" class="view">
+    <div class="racebar">
+      <select id="raceA"></select>
+      <span style="color:var(--dim);font-weight:700">VS</span>
+      <select id="raceB"></select>
+      <button class="btn go" id="raceGo">&#9654; RACE</button>
+      <select id="speed">
+        <option value="4">4x</option>
+        <option value="16" selected>16x</option>
+        <option value="64">64x</option>
+      </select>
+    </div>
+    <div class="lanes">
+      <div class="lane" id="laneA"><div class="lanehead"><div id="headA">-</div><div class="clock" id="clockA">0.0s</div></div><div class="term" id="termA"></div><div class="finish" id="finA"></div></div>
+      <div class="lane" id="laneB"><div class="lanehead"><div id="headB">-</div><div class="clock" id="clockB">0.0s</div></div><div class="term" id="termB"></div><div class="finish" id="finB"></div></div>
+    </div>
+  </section>
+
+  <section id="tasks" class="view">
+    <div class="task"><h3>csv-parser</h3><p>Implement a spec-complete CSV parser: quoted fields, escaped quotes, embedded commas and newlines, CRLF, trailing-newline semantics. Scored against 10 hidden tests.</p></div>
+    <div class="task"><h3>rate-limiter</h3><p>Sliding-window rate limiter with exact boundary semantics; rejected requests must not extend the window. Scored against 8 hidden tests.</p></div>
+    <div class="task"><h3>md-table</h3><p>GitHub-flavored markdown table renderer: column union in first-seen order, exact padding and alignment rules. Scored against 6 hidden tests.</p></div>
+    <div class="task"><h3>Run your own harness</h3><p>Any CLI agent works - Codex, Claude Code, your custom scaffold. The runner copies the task workspace to a sandbox, your harness builds, the hidden suite (which the agent never sees) scores it:</p>
+    <code class="blk">node runner/run.mjs --task tasks/csv-parser --harness my-setup --cmd "codex exec --full-auto --cd {ws} {prompt}"</code></div>
+  </section>
+
+  <section id="about" class="view">
+    <div class="about">
+      <h3>Why HarnessArena</h3>
+      <p>A "harness" is everything around the model: system prompts, tool loop, scaffolding, recovery logic, context strategy. Public leaderboards hide it, yet it routinely decides whether an agent ships or stalls. HarnessArena makes the harness the unit of competition.</p>
+      <h3>Scoring</h3>
+      <p><b>Correctness first:</b> pass rate on a hidden test suite the agent never sees. <b>Speed second:</b> wall-clock from prompt to done. Ties broken by output volume (chattiness costs you). Every row on the leaderboard is a real recorded run - the replay is the receipt.</p>
+      <h3>Honesty</h3>
+      <p>No synthetic numbers. Every run links to its full timestamped trace, replayable in the RACE tab.</p>
+    </div>
+  </section>
+
+  <footer>HARNESSARENA - Built in London hackathon, June 12 2026. Static HTML, zero frameworks (the unreasonable effectiveness of HTML). All data = real recorded runs.</footer>
+</div>
+
+<script>
+let RUNS = [];
+const $ = id => document.getElementById(id);
+const fmtS = ms => (ms / 1000).toFixed(1) + 's';
+const fmtKB = b => (b / 1024).toFixed(1) + 'KB';
+
+// nav
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('nav button').forEach(x => x.classList.remove('on'));
+  document.querySelectorAll('.view').forEach(x => x.classList.remove('on'));
+  b.classList.add('on'); $(b.dataset.v).classList.add('on');
+});
+
+function pillFor(r) {
+  const cls = r.score === 1 ? 'pass' : r.score > 0 ? 'part' : 'fail';
+  return `<span class="pill ${cls}">${r.passed}/${r.total}</span>`;
+}
+
+function renderStats() {
+  const harnesses = [...new Set(RUNS.map(r => r.harness))];
+  const tasks = [...new Set(RUNS.map(r => r.task))];
+  const perfect = RUNS.filter(r => r.score === 1);
+  const fastest = perfect.length ? perfect.reduce((a, b) => a.durationMs < b.durationMs ? a : b) : null;
+  $('stats').innerHTML = `
+    <div class="stat"><div class="k">Recorded runs</div><div class="v grad">${RUNS.length}</div></div>
+    <div class="stat"><div class="k">Harnesses competing</div><div class="v">${harnesses.length}</div></div>
+    <div class="stat"><div class="k">Tasks</div><div class="v">${tasks.length}</div></div>
+    <div class="stat"><div class="k">Fastest perfect run</div><div class="v" style="color:var(--green)">${fastest ? fmtS(fastest.durationMs) : '-'}</div></div>`;
+}
+
+let taskFilter = 'all';
+function renderChips() {
+  const tasks = ['all', ...new Set(RUNS.map(r => r.task))];
+  $('taskChips').innerHTML = tasks.map(t =>
+    `<button class="chip ${t === taskFilter ? 'on' : ''}" data-t="${t}">${t}</button>`).join('');
+  document.querySelectorAll('.chip').forEach(c => c.onclick = () => { taskFilter = c.dataset.t; renderChips(); renderBoard(); });
+}
+
+function renderBoard() {
+  const rows = RUNS.filter(r => taskFilter === 'all' || r.task === taskFilter)
+    .slice().sort((a, b) => b.score - a.score || a.durationMs - b.durationMs);
+  if (!rows.length) {
+    $('boardWrap').innerHTML = `<div class="empty">No runs recorded yet.<br>Be the first into the arena:<br><code class="blk">node runner/run.mjs --task tasks/csv-parser --harness your-name --cmd "..."</code></div>`;
+    return;
+  }
+  $('boardWrap').innerHTML = `<table><thead><tr>
+    <th>#</th><th>Harness</th><th>Task</th><th>Hidden tests</th><th>Score</th><th>Time</th><th>Output</th><th>Tokens</th>
+  </tr></thead><tbody>` + rows.map((r, i) => `
+    <tr class="${i === 0 ? 'first' : ''}">
+      <td class="rank">${i + 1}</td>
+      <td><span class="hname">${r.harness}</span><br><span class="mod">${r.model || ''}</span></td>
+      <td>${r.task}</td>
+      <td>${pillFor(r)}</td>
+      <td><div class="bar"><i style="width:${r.score * 100}%"></i></div></td>
+      <td>${fmtS(r.durationMs)}</td>
+      <td>${fmtKB(r.outputBytes)}</td>
+      <td>${r.tokensReported ? r.tokensReported.toLocaleString() : '-'}</td>
+    </tr>`).join('') + '</tbody></table>';
+}
+
+// ---- race replay ----
+function fillRaceSelects() {
+  const opts = RUNS.map(r => `<option value="${r.id}">${r.harness} - ${r.task} (${r.passed}/${r.total}, ${fmtS(r.durationMs)})</option>`).join('');
+  $('raceA').innerHTML = opts; $('raceB').innerHTML = opts;
+  if (RUNS.length > 1) $('raceB').selectedIndex = 1;
+}
+
+let raceTimers = [];
+async function loadTrace(id) {
+  const res = await fetch(`data/traces/${id}.json`);
+  return res.json();
+}
+
+function playLane(trace, term, clock, fin, lane, speed, onDone) {
+  term.innerHTML = `<div class="sys">$ ${trace.run.harness} &gt; ${trace.run.task}</div>`;
+  fin.textContent = ''; lane.classList.remove('winner');
+  const t0 = performance.now();
+  const dur = trace.run.durationMs;
+  let ei = 0;
+  const tick = setInterval(() => {
+    const elapsed = (performance.now() - t0) * speed;
+    clock.textContent = fmtS(Math.min(elapsed, dur));
+    while (ei < trace.events.length && trace.events[ei].t <= elapsed) {
+      const e = trace.events[ei++];
+      const d = document.createElement('div');
+      d.className = e.s; d.textContent = e.x;
+      term.appendChild(d); term.scrollTop = term.scrollHeight;
+    }
+    if (elapsed >= dur) {
+      clearInterval(tick);
+      const r = trace.run;
+      const ok = r.score === 1;
+      fin.innerHTML = `${ok ? '&#127942;' : r.score > 0 ? '&#9888;' : '&#10060;'} ${r.passed}/${r.total} hidden tests - ${fmtS(r.durationMs)}`;
+      fin.style.color = ok ? 'var(--green)' : r.score > 0 ? 'var(--amber)' : 'var(--red)';
+      onDone(r);
+    }
+  }, 50);
+  raceTimers.push(tick);
+}
+
+$('raceGo').onclick = async () => {
+  raceTimers.forEach(clearInterval); raceTimers = [];
+  const speed = Number($('speed').value);
+  const [ta, tb] = await Promise.all([loadTrace($('raceA').value), loadTrace($('raceB').value)]);
+  $('headA').textContent = ta.run.harness; $('headB').textContent = tb.run.harness;
+  const done = [];
+  const judge = () => {
+    if (!done[0] || !done[1]) return;
+    const [a, b] = done;
+    const w = b.score - a.score || a.durationMs - b.durationMs;
+    if (a.score !== b.score || a.durationMs !== b.durationMs)
+      (w <= 0 ? $('laneA') : $('laneB')).classList.add('winner');
+  };
+  playLane(ta, $('termA'), $('clockA'), $('finA'), $('laneA'), speed, r => { done[0] = r; judge(); });
+  playLane(tb, $('termB'), $('clockB'), $('finB'), $('laneB'), speed, r => { done[1] = r; judge(); });
+};
+
+// ---- boot ----
+(async () => {
+  try {
+    RUNS = await (await fetch('data/runs.json')).json();
+  } catch { RUNS = []; }
+  renderStats(); renderChips(); renderBoard(); fillRaceSelects();
+})();
+</script>
+</body>
+</html>
