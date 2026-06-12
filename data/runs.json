@@ -13,7 +13,10 @@
   "outputBytes": 61,
   "tokensReported": null,
   "notes": "human reference solution, scripted apply",
-  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs"
+  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs",
+  "owner": "kitfunso",
+  "x": null,
+  "setup": "bare hands: hand-written reference solution, no AI"
  },
  {
   "id": "rate-limiter--reference-human--1781261691566",
@@ -29,7 +32,10 @@
   "outputBytes": 61,
   "tokensReported": null,
   "notes": "human reference solution, scripted apply",
-  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs"
+  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs",
+  "owner": "kitfunso",
+  "x": null,
+  "setup": "bare hands: hand-written reference solution, no AI"
  },
  {
   "id": "md-table--reference-human--1781261691707",
@@ -45,23 +51,10 @@
   "outputBytes": 61,
   "tokensReported": null,
   "notes": "human reference solution, scripted apply",
-  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs"
- },
- {
-  "id": "csv-parser--codex-low-effort--1781262543989",
-  "task": "csv-parser",
-  "harness": "codex-low-effort",
-  "model": "gpt-5.5",
-  "startedAt": "2026-06-12T11:09:03.988Z",
-  "durationMs": 67431,
-  "passed": 10,
-  "total": 10,
-  "score": 1,
-  "exitCode": 0,
-  "outputBytes": 29994,
-  "tokensReported": null,
-  "notes": "",
-  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c model_reasoning_effort=low -c mcp_servers={} {prompt}"
+  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs",
+  "owner": "kitfunso",
+  "x": null,
+  "setup": "bare hands: hand-written reference solution, no AI"
  },
  {
   "id": "csv-parser--codex-full-auto--1781262504009",
@@ -77,7 +70,10 @@
   "outputBytes": 14787,
   "tokensReported": 36152,
   "notes": "",
-  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c mcp_servers={} {prompt}"
+  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c mcp_servers={} {prompt}",
+  "owner": "kitfunso",
+  "x": null,
+  "setup": "Codex CLI exec / gpt-5.5 / reasoning=xhigh / no MCP / TASK.md file prompt / sandboxed git workspace"
  },
  {
   "id": "rate-limiter--codex-low-effort--1781262641198",
@@ -93,7 +89,10 @@
   "outputBytes": 10857,
   "tokensReported": 20716,
   "notes": "",
-  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c model_reasoning_effort=low -c mcp_servers={} {prompt}"
+  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c model_reasoning_effort=low -c mcp_servers={} {prompt}",
+  "owner": "kitfunso",
+  "x": null,
+  "setup": "Codex CLI exec / gpt-5.5 / reasoning=low / no MCP / TASK.md file prompt / sandboxed git workspace"
  },
  {
   "id": "md-table--codex-low-effort--1781262642871",
@@ -109,23 +108,10 @@
   "outputBytes": 17501,
   "tokensReported": 26279,
   "notes": "",
-  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c model_reasoning_effort=low -c mcp_servers={} {prompt}"
- },
- {
-  "id": "rate-limiter--claude-code-haiku--1781262790899",
-  "task": "rate-limiter",
-  "harness": "claude-code-haiku",
-  "model": "haiku-4.5",
-  "startedAt": "2026-06-12T11:13:10.898Z",
-  "durationMs": 30548,
-  "passed": 8,
-  "total": 8,
-  "score": 1,
-  "exitCode": 0,
-  "outputBytes": 416,
-  "tokensReported": null,
-  "notes": "",
-  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@anthropic-ai\\claude-code\\cli.js -p {prompt} --model haiku --permission-mode acceptEdits --allowedTools \" Read,Write,Edit,Glob,Grep,Bash\\"
+  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c model_reasoning_effort=low -c mcp_servers={} {prompt}",
+  "owner": "kitfunso",
+  "x": null,
+  "setup": "Codex CLI exec / gpt-5.5 / reasoning=low / no MCP / TASK.md file prompt / sandboxed git workspace"
  },
  {
   "id": "md-table--codex-xhigh-effort--1781262807340",
@@ -141,7 +127,10 @@
   "outputBytes": 11719,
   "tokensReported": 18086,
   "notes": "",
-  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c mcp_servers={} {prompt}"
+  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c mcp_servers={} {prompt}",
+  "owner": "kitfunso",
+  "x": null,
+  "setup": "Codex CLI exec / gpt-5.5 / reasoning=xhigh / no MCP / TASK.md file prompt / sandboxed git workspace"
  },
  {
   "id": "rate-limiter--codex-xhigh-effort--1781262805471",
@@ -157,6 +146,47 @@
   "outputBytes": 10791,
   "tokensReported": 24543,
   "notes": "",
-  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c mcp_servers={} {prompt}"
+  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c mcp_servers={} {prompt}",
+  "owner": "kitfunso",
+  "x": null,
+  "setup": "Codex CLI exec / gpt-5.5 / reasoning=xhigh / no MCP / TASK.md file prompt / sandboxed git workspace"
+ },
+ {
+  "id": "csv-parser--codex-low-effort--1781264153324",
+  "task": "csv-parser",
+  "harness": "codex-low-effort",
+  "model": "gpt-5.5",
+  "startedAt": "2026-06-12T11:35:53.324Z",
+  "durationMs": 46879,
+  "passed": 10,
+  "total": 10,
+  "score": 1,
+  "exitCode": 0,
+  "outputBytes": 16558,
+  "tokensReported": 26715,
+  "notes": "",
+  "owner": "kitfunso",
+  "x": null,
+  "setup": "Codex CLI exec / gpt-5.5 / reasoning=low / no MCP / TASK.md file prompt / sandboxed git workspace",
+  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c model_reasoning_effort=low -c mcp_servers={} {prompt}"
+ },
+ {
+  "id": "rate-limiter--claude-code-haiku--1781264341007",
+  "task": "rate-limiter",
+  "harness": "claude-code-haiku",
+  "model": "haiku-4.5",
+  "startedAt": "2026-06-12T11:39:01.007Z",
+  "durationMs": 27150,
+  "passed": 8,
+  "total": 8,
+  "score": 1,
+  "exitCode": 0,
+  "outputBytes": 1463,
+  "tokensReported": 165108,
+  "notes": "",
+  "owner": "kitfunso",
+  "x": null,
+  "setup": "Claude Code headless -p / haiku-4.5 / acceptEdits / no skills, no hooks",
+  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@anthropic-ai\\claude-code\\cli.js -p --model haiku --permission-mode acceptEdits --output-format json {prompt}"
  }
 ]

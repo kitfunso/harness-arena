@@ -1,0 +1,28 @@
+{
+ "run": {
+  "id": "rate-limiter--claude-code-haiku--1781264341007",
+  "task": "rate-limiter",
+  "harness": "claude-code-haiku",
+  "model": "haiku-4.5",
+  "startedAt": "2026-06-12T11:39:01.007Z",
+  "durationMs": 27150,
+  "passed": 8,
+  "total": 8,
+  "score": 1,
+  "exitCode": 0,
+  "outputBytes": 1463,
+  "tokensReported": 165108,
+  "notes": "",
+  "owner": "kitfunso",
+  "x": null,
+  "setup": "Claude Code headless -p / haiku-4.5 / acceptEdits / no skills, no hooks",
+  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@anthropic-ai\\claude-code\\cli.js -p --model haiku --permission-mode acceptEdits --output-format json {prompt}"
+ },
+ "events": [
+  {
+   "t": 26199,
+   "s": "out",
+   "x": "{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"duration_ms\":23908,\"duration_api_ms\":22313,\"num_turns\":4,\"result\":\"Done. I've implemented `SlidingWindowLimiter` with:\\n\\n- **Constructor**: stores `limit`, `windowM"
+  }
+ ]
+}

@@ -13,7 +13,10 @@
   "outputBytes": 61,
   "tokensReported": null,
   "notes": "human reference solution, scripted apply",
-  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs"
+  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs",
+  "owner": "kitfunso",
+  "x": null,
+  "setup": "bare hands: hand-written reference solution, no AI"
  },
  "events": [
   {

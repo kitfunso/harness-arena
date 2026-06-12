@@ -24,6 +24,9 @@ const harness = arg('harness') ?? bail('missing --harness');
 const model = arg('model', '');
 const cmdTemplate = arg('cmd') ?? bail('missing --cmd');
 const notes = arg('notes', '');
+const owner = arg('owner', null);      // GitHub handle of the participant
+const xHandle = arg('x', null);        // X handle, only if disclosed
+const setup = arg('setup', '');        // one-line description of the harness setup
 const timeoutMs = Number(arg('timeout', 600)) * 1000;
 
 function bail(msg) { console.error(msg); process.exit(2); }
@@ -45,8 +48,11 @@ const t0 = Date.now();
 const events = [];
 const MAX_EVENTS = 600;
 
+let fullText = '';
 function record(stream, chunk) {
-  for (const line of chunk.toString().split(/\r?\n/)) {
+  const text = chunk.toString();
+  if (fullText.length < 2_000_000) fullText += text;
+  for (const line of text.split(/\r?\n/)) {
     if (!line.trim() || events.length >= MAX_EVENTS) continue;
     events.push({ t: Date.now() - t0, s: stream, x: line.slice(0, 220) });
     console.log(`  [${stream}] ${line.slice(0, 160)}`);
@@ -87,16 +93,22 @@ await new Promise(res => {
 const m = testOut.match(/RESULT (\d+)\/(\d+)/);
 if (m) { passed = Number(m[1]); total = Number(m[2]); }
 
-// Best-effort token count from agent output (codex/claude print usage lines).
-const allText = events.map(e => e.x).join('\n');
-const tok = allText.match(/(?:tokens used|total tokens)[:\s]+([\d,]+)/i);
-const tokensReported = tok ? Number(tok[1].replaceAll(',', '')) : null;
+// Best-effort token count from agent output. Codex prints "tokens used: N";
+// claude -p --output-format json embeds a usage object.
+let tokensReported = null;
+const tok = fullText.match(/(?:tokens used|total tokens)[:\s]+([\d,]+)/i);
+if (tok) tokensReported = Number(tok[1].replaceAll(',', ''));
+else {
+  const nums = [...fullText.matchAll(/"(?:input_tokens|output_tokens|cache_creation_input_tokens|cache_read_input_tokens)"\s*:\s*(\d+)/g)];
+  if (nums.length) tokensReported = nums.reduce((s, m) => s + Number(m[1]), 0);
+}
 
 const id = `${task}--${harness.replace(/[^a-z0-9-]/gi, '_')}--${t0}`;
 const run = {
   id, task, harness, model, startedAt, durationMs, passed, total,
   score: total ? +(passed / total).toFixed(3) : 0,
   exitCode, outputBytes, tokensReported, notes,
+  owner, x: xHandle, setup,
   cmd: cmdTemplate,
 };
 
