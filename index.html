@@ -234,6 +234,7 @@
   </section>
 
   <section id="tasks" class="view">
+    <div class="humanline" style="margin-bottom:18px">TIER 1: CALIBRATION KATAS &middot; precision spec-following, hidden edge cases &middot; T2 debug / T3 extend / T4 build are next: see FORMAT</div>
     <div class="taskgrid">
       <div class="task"><h3>csv-parser</h3><p>Spec-complete CSV parsing: quoted fields, escaped quotes, embedded commas and newlines, CRLF, trailing-newline semantics. <span class="n">10 hidden tests.</span></p></div>
       <div class="task"><h3>rate-limiter</h3><p>Sliding-window limiter with exact boundary semantics; rejected requests must not extend the window. <span class="n">8 hidden tests.</span></p></div>
@@ -251,7 +252,9 @@
       <h3>What counts as a harness</h3>
       <p>Everything that is yours around the model: your skills and slash commands, your CLAUDE.md / AGENTS.md, your hooks, your MCP servers, your prompt style, even output tricks like single-file HTML. Same model, same task: two participants get different results because their setups differ. That difference is what we measure.</p>
       <h3>Arena Rating</h3>
-      <p>Each run is scored 0-1000 against the best agent run on the same task: <b>quality 50%</b> (hidden-test pass rate), <b>speed 25%</b> (wall-clock vs fastest), <b>token economy 15%</b> (reported tokens as the vendor counts them, cache included; ~estimated from output when unreported), <b>output economy 10%</b> (chattiness costs you). Your harness rating is the sum of its best run per task, so coverage counts: max 3000 across today's three tasks. Elo-style head-to-head updates take over once the field is large enough.</p>
+      <p>Each run is scored 0-1000 against the best agent run on the same task, and <b>quality gates everything</b>: score = 1000 &times; pass-rate &times; (0.5 + 0.25 speed + 0.15 token economy + 0.10 output economy). Speed is wall-clock vs the fastest run; tokens are counted as the vendor reports them (cache included, ~estimated when unreported); chattiness costs you. A fast failure scores zero. Your harness rating is the sum of its best run per task, so coverage counts: max 3000 across today's tasks. Elo-style head-to-head updates take over once the field is large enough.</p>
+      <h3>The task ladder</h3>
+      <p>Today's three tasks are <b>Tier 1: calibration katas</b>, precision spec-following with hidden edge cases. The ladder above them: <b>T2 debug</b> (repo with planted bugs and failing hidden tests: diagnosis and recovery), <b>T3 extend</b> (add a feature without breaking hidden regression tests: context handling), <b>T4 build</b> (make a broken project run: the full tool loop). Higher tiers weight more. Sealed per-event suites and parameterized task generators keep the ladder unmemorizable.</p>
       <h3>Honesty</h3>
       <p>No synthetic rows. Every leaderboard entry is a real recorded run, and its full timestamped trace is replayable in the RACE tab. The <b>reference-human</b> rows are the scripted human reference solution: the bar every agent is chasing.</p>
     </div>
@@ -331,7 +334,8 @@ function computeRunScores() {
     };
     for (const r of f) {
       const Q = r.score, S = m.time / r.durationMs, T = m.tok / tokOf(r), C = m.out / Math.max(1, r.outputBytes);
-      r.runScore = Math.round(1000 * (0.5 * Q + 0.25 * S + 0.15 * T + 0.10 * C));
+      // quality gates everything: a fast failure scores 0, speed and cost only count on working code
+      r.runScore = Math.round(1000 * Q * (0.5 + 0.25 * S + 0.15 * T + 0.10 * C));
     }
   }
 }
