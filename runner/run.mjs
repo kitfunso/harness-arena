@@ -40,7 +40,7 @@ writeFileSync(join(ws, 'TASK.md'), spec);
 // Agents expect a trusted git workspace (codex refuses non-repos, claude diffs against HEAD).
 try { execSync('git init -q && git add -A && git commit -qm task-start', { cwd: ws, stdio: 'ignore', shell: true }); } catch { /* agent may still cope */ }
 
-const promptQuoted = '"Complete the task described in TASK.md in the current directory. Edit impl.mjs only. A hidden test suite scores you on correctness - be precise about the spec, then stop."';
+const promptQuoted = '"Complete the task described in TASK.md in the current directory. Follow its constraints exactly, including which files you may edit. A hidden test suite scores you on correctness - be precise about the spec, then stop."';
 const cmd = cmdTemplate.replaceAll('{ws}', ws).replaceAll('{prompt}', promptQuoted);
 
 const startedAt = new Date().toISOString();

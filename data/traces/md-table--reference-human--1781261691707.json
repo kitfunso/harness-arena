@@ -15,7 +15,7 @@
   "notes": "human reference solution, scripted apply",
   "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs",
   "owner": "kitfunso",
-  "x": null,
+  "x": "keithso27",
   "setup": "bare hands: hand-written reference solution, no AI"
  },
  "events": [

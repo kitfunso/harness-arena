@@ -1,22 +1,22 @@
 {
  "run": {
-  "id": "rate-limiter--reference-human--1781261691566",
-  "task": "rate-limiter",
+  "id": "debug-cart--reference-human--1781265306056",
+  "task": "debug-cart",
   "harness": "reference-human",
   "model": "human baseline",
-  "startedAt": "2026-06-12T10:54:51.566Z",
-  "durationMs": 55,
-  "passed": 8,
-  "total": 8,
+  "startedAt": "2026-06-12T11:55:06.056Z",
+  "durationMs": 57,
+  "passed": 12,
+  "total": 12,
   "score": 1,
   "exitCode": 0,
   "outputBytes": 61,
   "tokensReported": null,
   "notes": "human reference solution, scripted apply",
-  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs",
   "owner": "kitfunso",
   "x": "keithso27",
-  "setup": "bare hands: hand-written reference solution, no AI"
+  "setup": "bare hands: hand-written reference solution, no AI",
+  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs"
  },
  "events": [
   {
@@ -25,7 +25,7 @@
    "x": "reading task spec..."
   },
   {
-   "t": 47,
+   "t": 48,
    "s": "out",
    "x": "reference solution applied to workspace"
   }

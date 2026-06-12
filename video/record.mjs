@@ -40,12 +40,12 @@ await wait(2600);
 await cap('HarnessArena: real agent runs on hidden test suites. No synthetic rows.');
 await wait(4600);
 
-// 3. podium + board
-await page.evaluate(() => window.scrollTo({ top: 560, behavior: 'smooth' }));
-await cap('Same model, gpt-5.5. Two harness configs. One cleared every task twice as fast.');
+// 3. standings + board
+await page.evaluate(() => window.scrollTo({ top: 620, behavior: 'smooth' }));
+await cap('Every setup gets an Arena Rating. Handles on the board. Real runs only.');
 await wait(6200);
-await page.evaluate(() => window.scrollTo({ top: 980, behavior: 'smooth' }));
-await cap('Correctness first, wall-clock second. Chattiness costs you.');
+await page.evaluate(() => window.scrollTo({ top: 1150, behavior: 'smooth' }));
+await cap('Quality, speed, tokens, output: scored per run, tier-weighted overall.');
 await wait(5600);
 
 // 4. race 1: codex low vs xhigh on csv-parser (defaults), 16x => ~8.3s
@@ -60,12 +60,12 @@ await wait(5400);
 await cap('The harness made the difference. Not the model.');
 await wait(4200);
 
-// 5. race 2: claude vs codex
-await pickRace('raceA', 'claude-code-haiku', 'rate-limiter');
-await pickRace('raceB', 'codex-low-effort', 'rate-limiter');
-await cap('Cross-vendor: Claude Code races Codex in the same arena.');
+// 5. race 2: claude vs codex on the debug tier, 16x
+await pickRace('raceA', 'claude-code-haiku', 'debug-cart');
+await pickRace('raceB', 'codex-low-effort', 'debug-cart');
+await cap('Tier 2: debug a real module. Different tiers crown different setups.');
 await page.click('#raceGo');
-await wait(6400);
+await wait(7500);
 
 // 6. tasks
 await tab('TASKS');

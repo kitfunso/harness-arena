@@ -15,7 +15,7 @@
   "notes": "human reference solution, scripted apply",
   "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs",
   "owner": "kitfunso",
-  "x": null,
+  "x": "keithso27",
   "setup": "bare hands: hand-written reference solution, no AI"
  },
  {
@@ -34,7 +34,7 @@
   "notes": "human reference solution, scripted apply",
   "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs",
   "owner": "kitfunso",
-  "x": null,
+  "x": "keithso27",
   "setup": "bare hands: hand-written reference solution, no AI"
  },
  {
@@ -53,7 +53,7 @@
   "notes": "human reference solution, scripted apply",
   "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs",
   "owner": "kitfunso",
-  "x": null,
+  "x": "keithso27",
   "setup": "bare hands: hand-written reference solution, no AI"
  },
  {
@@ -72,7 +72,7 @@
   "notes": "",
   "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c mcp_servers={} {prompt}",
   "owner": "kitfunso",
-  "x": null,
+  "x": "keithso27",
   "setup": "Codex CLI exec / gpt-5.5 / reasoning=xhigh / no MCP / TASK.md file prompt / sandboxed git workspace"
  },
  {
@@ -91,7 +91,7 @@
   "notes": "",
   "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c model_reasoning_effort=low -c mcp_servers={} {prompt}",
   "owner": "kitfunso",
-  "x": null,
+  "x": "keithso27",
   "setup": "Codex CLI exec / gpt-5.5 / reasoning=low / no MCP / TASK.md file prompt / sandboxed git workspace"
  },
  {
@@ -110,7 +110,7 @@
   "notes": "",
   "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c model_reasoning_effort=low -c mcp_servers={} {prompt}",
   "owner": "kitfunso",
-  "x": null,
+  "x": "keithso27",
   "setup": "Codex CLI exec / gpt-5.5 / reasoning=low / no MCP / TASK.md file prompt / sandboxed git workspace"
  },
  {
@@ -129,7 +129,7 @@
   "notes": "",
   "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c mcp_servers={} {prompt}",
   "owner": "kitfunso",
-  "x": null,
+  "x": "keithso27",
   "setup": "Codex CLI exec / gpt-5.5 / reasoning=xhigh / no MCP / TASK.md file prompt / sandboxed git workspace"
  },
  {
@@ -148,7 +148,7 @@
   "notes": "",
   "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c mcp_servers={} {prompt}",
   "owner": "kitfunso",
-  "x": null,
+  "x": "keithso27",
   "setup": "Codex CLI exec / gpt-5.5 / reasoning=xhigh / no MCP / TASK.md file prompt / sandboxed git workspace"
  },
  {
@@ -166,7 +166,7 @@
   "tokensReported": 26715,
   "notes": "",
   "owner": "kitfunso",
-  "x": null,
+  "x": "keithso27",
   "setup": "Codex CLI exec / gpt-5.5 / reasoning=low / no MCP / TASK.md file prompt / sandboxed git workspace",
   "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c model_reasoning_effort=low -c mcp_servers={} {prompt}"
  },
@@ -185,8 +185,84 @@
   "tokensReported": 165108,
   "notes": "",
   "owner": "kitfunso",
-  "x": null,
+  "x": "keithso27",
   "setup": "Claude Code headless -p / haiku-4.5 / acceptEdits / no skills, no hooks",
   "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@anthropic-ai\\claude-code\\cli.js -p --model haiku --permission-mode acceptEdits --output-format json {prompt}"
+ },
+ {
+  "id": "debug-cart--reference-human--1781265306056",
+  "task": "debug-cart",
+  "harness": "reference-human",
+  "model": "human baseline",
+  "startedAt": "2026-06-12T11:55:06.056Z",
+  "durationMs": 57,
+  "passed": 12,
+  "total": 12,
+  "score": 1,
+  "exitCode": 0,
+  "outputBytes": 61,
+  "tokensReported": null,
+  "notes": "human reference solution, scripted apply",
+  "owner": "kitfunso",
+  "x": "keithso27",
+  "setup": "bare hands: hand-written reference solution, no AI",
+  "cmd": "node C:\\Users\\skf_s\\harness-arena\\runner\\copy-ref.mjs"
+ },
+ {
+  "id": "debug-cart--claude-code-haiku--1781265312031",
+  "task": "debug-cart",
+  "harness": "claude-code-haiku",
+  "model": "haiku-4.5",
+  "startedAt": "2026-06-12T11:55:12.031Z",
+  "durationMs": 49750,
+  "passed": 12,
+  "total": 12,
+  "score": 1,
+  "exitCode": 0,
+  "outputBytes": 1189,
+  "tokensReported": 392354,
+  "notes": "",
+  "owner": "kitfunso",
+  "x": "keithso27",
+  "setup": "Claude Code headless -p / haiku-4.5 / acceptEdits / Bash allowed / no skills, no hooks",
+  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@anthropic-ai\\claude-code\\cli.js -p --model haiku --permission-mode acceptEdits --allowedTools Bash,Edit,Write,Read,Glob,Grep --output-format json {prompt}"
+ },
+ {
+  "id": "debug-cart--codex-low-effort--1781265531931",
+  "task": "debug-cart",
+  "harness": "codex-low-effort",
+  "model": "gpt-5.5",
+  "startedAt": "2026-06-12T11:58:51.931Z",
+  "durationMs": 67842,
+  "passed": 12,
+  "total": 12,
+  "score": 1,
+  "exitCode": 0,
+  "outputBytes": 27912,
+  "tokensReported": 21988,
+  "notes": "",
+  "owner": "kitfunso",
+  "x": "keithso27",
+  "setup": "Codex CLI exec / gpt-5.5 / reasoning=low / no MCP / TASK.md file prompt / sandboxed git workspace",
+  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c model_reasoning_effort=low -c mcp_servers={} {prompt}"
+ },
+ {
+  "id": "debug-cart--codex-xhigh-effort--1781265536999",
+  "task": "debug-cart",
+  "harness": "codex-xhigh-effort",
+  "model": "gpt-5.5",
+  "startedAt": "2026-06-12T11:58:56.999Z",
+  "durationMs": 83650,
+  "passed": 12,
+  "total": 12,
+  "score": 1,
+  "exitCode": 0,
+  "outputBytes": 25370,
+  "tokensReported": 52091,
+  "notes": "",
+  "owner": "kitfunso",
+  "x": "keithso27",
+  "setup": "Codex CLI exec / gpt-5.5 / reasoning=xhigh / no MCP / TASK.md file prompt / sandboxed git workspace",
+  "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c mcp_servers={} {prompt}"
  }
 ]

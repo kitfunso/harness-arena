@@ -15,7 +15,7 @@
   "notes": "",
   "cmd": "node C:\\Users\\skf_s\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js exec --full-auto --skip-git-repo-check -c mcp_servers={} {prompt}",
   "owner": "kitfunso",
-  "x": null,
+  "x": "keithso27",
   "setup": "Codex CLI exec / gpt-5.5 / reasoning=xhigh / no MCP / TASK.md file prompt / sandboxed git workspace"
  },
  "events": [

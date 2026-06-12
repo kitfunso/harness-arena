@@ -6,190 +6,173 @@
 <title>HarnessArena - race your AI coding harness</title>
 <meta property="og:title" content="HarnessArena">
 <meta property="og:description" content="Same model. Same task. A hundred ways to harness it. Real agent runs, ranked and replayable.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23050505'/><text y='.9em' font-size='90'>&#9889;</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23100f0d'/><text y='.85em' x='8' font-size='80' fill='%23ff5a1f' font-family='Georgia' font-style='italic'>A</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #050505; --panel: #0c0d0f; --panel2: #121316; --border: #1d1f23; --border2: #2a2d33;
-    --text: #f2f2ef; --dim: #8b8f98; --dim2: #55585f;
-    --acid: #c8ff00; --green: #4ade80; --amber: #fbbf24; --red: #ff5d7e; --gold: #ffd166;
-    --disp: 'Archivo', system-ui, sans-serif;
-    --serif: 'Instrument Serif', Georgia, serif;
+    --bg: #100f0d; --panel: #161412; --panel2: #1d1a17; --line: #2a2622; --hairline: #211e1a;
+    --text: #ece8df; --dim: #9a948b; --dim2: #635d55;
+    --accent: #ff5a1f; --green: #4cb963; --amber: #d9a13b; --red: #d95757; --gold: #c9a227;
+    --serif: 'Fraunces', Georgia, serif;
     --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  ::selection { background: var(--acid); color: #050505; }
+  ::selection { background: var(--accent); color: #100f0d; }
   html { scroll-behavior: smooth; }
   body { background: var(--bg); color: var(--text); font-family: var(--mono); overflow-x: hidden; }
 
-  /* grain + glow */
-  .grain { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .05; mix-blend-mode: overlay;
+  .grain { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .04; mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); }
-  .glow { position: fixed; z-index: -2; width: 900px; height: 520px; left: 50%; top: -260px; transform: translateX(-50%);
-    background: radial-gradient(ellipse, rgba(200,255,0,.07), transparent 65%); pointer-events: none; }
 
-  /* ticker */
-  .ticker { border-bottom: 1px solid var(--border); background: #070708; overflow: hidden; white-space: nowrap; font-size: 11px; padding: 8px 0; letter-spacing: .5px; }
-  .ticker span { display: inline-block; animation: tick 38s linear infinite; }
+  .ticker { border-bottom: 1px solid var(--hairline); background: var(--bg); overflow: hidden; white-space: nowrap; font-size: 10.5px; padding: 9px 0; letter-spacing: .6px; color: var(--dim); }
+  .ticker span { display: inline-block; animation: tick 42s linear infinite; }
   @keyframes tick { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   .ticker b { color: var(--text); font-weight: 600; }
-  .ticker i { color: var(--acid); font-style: normal; }
-  .ticker .sep { color: var(--dim2); margin: 0 18px; }
+  .ticker i { color: var(--accent); font-style: normal; }
+  .ticker .sep { color: var(--dim2); margin: 0 20px; }
 
-  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 22px 90px; }
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 0 26px 90px; }
 
-  /* hero */
-  header { padding: 72px 0 14px; text-align: center; }
-  .kicker { color: var(--dim); font-size: 11px; letter-spacing: 4px; text-transform: uppercase; }
-  .kicker em { color: var(--acid); font-style: normal; }
-  .logo {
-    font-family: var(--disp); font-variation-settings: 'wdth' 120, 'wght' 880;
-    font-size: clamp(52px, 9.5vw, 120px); line-height: .92; letter-spacing: -2px;
-    text-transform: uppercase; margin-top: 18px;
-  }
-  .logo .l1 { display: block; animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
-  .logo .l2 { display: block; color: var(--acid); animation: rise .7s .12s cubic-bezier(.2,.8,.2,1) both;
-    text-shadow: 0 0 80px rgba(200,255,0,.35); }
-  @keyframes rise { from { opacity: 0; transform: translateY(46px); } }
-  .tagline { margin: 26px auto 0; font-size: 15px; max-width: 640px; line-height: 1.85; color: var(--dim); animation: rise .7s .24s both; }
-  .tagline .q { font-family: var(--serif); font-style: italic; font-size: 21px; color: var(--text); display: block; margin-bottom: 10px; }
-  .tagline b { color: var(--acid); font-weight: 600; }
+  /* hero: left-aligned, editorial */
+  header { padding: 64px 0 8px; border-bottom: 1px solid var(--hairline); }
+  .kicker { color: var(--dim2); font-size: 10.5px; letter-spacing: 3.5px; text-transform: uppercase; }
+  .kicker em { color: var(--accent); font-style: normal; }
+  h1.logo { font-family: var(--serif); font-weight: 420; font-size: clamp(54px, 8.4vw, 104px);
+    line-height: 1.0; letter-spacing: -1px; margin-top: 22px; font-variation-settings: 'opsz' 144; }
+  h1.logo .it { font-style: italic; color: var(--accent); font-weight: 480; }
+  .standfirst { font-family: var(--serif); font-style: italic; font-weight: 350; font-size: clamp(19px, 2.4vw, 26px);
+    color: var(--text); margin: 26px 0 14px; max-width: 700px; line-height: 1.45; }
+  .tagline { font-size: 13px; max-width: 660px; line-height: 1.9; color: var(--dim); margin-bottom: 36px; }
+  .tagline b { color: var(--text); font-weight: 600; }
+  .tagline .ac { color: var(--accent); }
 
-  .statrow { display: flex; gap: 0; justify-content: center; flex-wrap: wrap; margin: 44px auto 8px; max-width: 880px;
-    border: 1px solid var(--border); border-radius: 2px; background: var(--panel); animation: rise .7s .36s both; }
-  .stat { flex: 1; min-width: 170px; padding: 22px 18px 18px; border-right: 1px solid var(--border); }
-  .stat:last-child { border-right: none; }
-  .stat .k { color: var(--dim2); font-size: 10px; text-transform: uppercase; letter-spacing: 2.5px; }
-  .stat .v { font-family: var(--disp); font-variation-settings: 'wdth' 115, 'wght' 800; font-size: 44px; margin-top: 6px; color: var(--text); }
-  .stat .v.ac { color: var(--acid); }
+  .statrow { display: flex; flex-wrap: wrap; border-top: 1px solid var(--hairline); }
+  .stat { flex: 1; min-width: 160px; padding: 18px 26px 22px 0; border-right: 1px solid var(--hairline); margin-right: 26px; }
+  .stat:last-child { border-right: none; margin-right: 0; }
+  .stat .k { color: var(--dim2); font-size: 10px; text-transform: uppercase; letter-spacing: 2.2px; }
+  .stat .v { font-family: var(--serif); font-weight: 500; font-size: 42px; margin-top: 8px; color: var(--text); font-variation-settings: 'opsz' 60; }
+  .stat .v.ac { color: var(--accent); }
 
-  /* nav */
-  nav { display: flex; gap: 0; justify-content: center; margin: 36px auto 34px; position: sticky; top: 12px; z-index: 50;
-    width: fit-content; border: 1px solid var(--border2); border-radius: 2px; background: rgba(7,7,8,.92); backdrop-filter: blur(10px); }
-  nav button {
-    background: none; border: none; border-right: 1px solid var(--border); color: var(--dim);
-    font: 600 12px var(--mono); padding: 13px 26px; cursor: pointer; letter-spacing: 1.5px; transition: all .18s;
-  }
-  nav button:last-child { border-right: none; }
-  nav button.on { color: #050505; background: var(--acid); }
-  nav button:not(.on):hover { color: var(--text); background: var(--panel2); }
+  nav { display: flex; gap: 34px; margin: 0 0 38px; padding: 18px 0 0; position: sticky; top: 0; z-index: 50;
+    background: linear-gradient(var(--bg) 82%, transparent); }
+  nav button { background: none; border: none; color: var(--dim2); font: 600 11.5px var(--mono);
+    padding: 4px 0 10px; cursor: pointer; letter-spacing: 2.4px; border-bottom: 2px solid transparent; transition: color .15s; }
+  nav button.on { color: var(--text); border-bottom-color: var(--accent); }
+  nav button:not(.on):hover { color: var(--dim); }
   .view { display: none; } .view.on { display: block; animation: fadein .3s ease; }
-  @keyframes fadein { from { opacity: 0; transform: translateY(8px); } }
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } }
 
-  /* podium */
-  .humanline { text-align: center; color: var(--dim2); font-size: 12px; margin-bottom: 26px; }
+  /* standings: timing-sheet rows */
+  .humanline { color: var(--dim2); font-size: 11.5px; margin-bottom: 18px; letter-spacing: .4px; }
   .humanline b { color: var(--gold); }
-  .podium { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 34px; border-radius: 2px; overflow: hidden; max-width: 920px; margin-left: auto; margin-right: auto; }
-  .pod { background: var(--panel); padding: 26px 26px 22px; position: relative; transition: background .2s; }
-  .pod:hover { background: var(--panel2); }
-  .pod .rk { font-family: var(--disp); font-variation-settings: 'wdth' 115, 'wght' 850; font-size: 44px; color: var(--dim2); line-height: 1; }
-  .pod .nm { font-family: var(--disp); font-variation-settings: 'wdth' 110, 'wght' 750; font-size: 20px; margin: 12px 0 6px; }
-  .pod .meta { color: var(--dim); font-size: 11.5px; line-height: 1.9; }
-  .pod .meta i { color: var(--green); font-style: normal; }
-  .pod.p1 { background: linear-gradient(180deg, rgba(200,255,0,.06), var(--panel) 70%); }
-  .pod.p1 .rk { color: var(--acid); } .pod.p1 .nm { color: var(--acid); }
-  .pod.p1::after { content: 'CHAMPION'; position: absolute; top: 22px; right: 20px; font-size: 9px; letter-spacing: 3px;
-    color: #050505; background: var(--acid); padding: 4px 9px; border-radius: 2px; font-weight: 800; }
+  .standings { border-top: 1px solid var(--line); margin-bottom: 44px; }
+  .srow { display: grid; grid-template-columns: 110px 1fr 280px; gap: 20px; align-items: baseline;
+    padding: 20px 0 18px; border-bottom: 1px solid var(--hairline); }
+  @media (max-width: 860px) { .srow { grid-template-columns: 90px 1fr; } .srow .sright { grid-column: 2; text-align: left; } }
+  .srow .rating { font-family: var(--serif); font-weight: 550; font-size: 40px; color: var(--dim); font-variation-settings: 'opsz' 60; }
+  .srow.lead .rating { color: var(--accent); }
+  .srow .nm { font-family: var(--serif); font-size: 23px; font-weight: 480; }
+  .srow.lead .nm::after { content: 'CHAMPION'; font-family: var(--mono); font-size: 9px; letter-spacing: 2.5px;
+    color: var(--accent); border: 1px solid var(--accent); padding: 3px 7px; margin-left: 12px; vertical-align: 3px; }
+  .srow .handles { font-size: 11.5px; color: var(--dim); margin-top: 5px; }
+  .srow .handles a { color: var(--dim); text-decoration: none; border-bottom: 1px solid var(--hairline); }
+  .srow .handles a:hover { color: var(--text); }
+  .srow .setup { font-size: 10.5px; color: var(--dim2); margin-top: 7px; line-height: 1.7; max-width: 560px; }
+  .srow .sright { text-align: right; font-size: 11.5px; color: var(--dim); line-height: 2; }
+  .srow .sright i { color: var(--green); font-style: normal; }
 
-  /* board */
-  .chips { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; justify-content: center; }
-  .chip { border: 1px solid var(--border2); background: transparent; color: var(--dim); border-radius: 2px; padding: 8px 16px; font: 600 11.5px var(--mono); cursor: pointer; letter-spacing: 1px; transition: all .15s; }
-  .chip.on { color: #050505; background: var(--acid); border-color: var(--acid); }
-  .chip:not(.on):hover { color: var(--text); border-color: var(--dim2); }
-  .tablewrap { overflow-x: auto; border: 1px solid var(--border); background: var(--panel); border-radius: 2px; }
-  table { width: 100%; border-collapse: collapse; min-width: 740px; }
-  th { text-align: left; color: var(--dim2); font-size: 10px; text-transform: uppercase; letter-spacing: 2.2px; padding: 15px 16px; border-bottom: 1px solid var(--border2); }
-  td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .chips { display: flex; gap: 22px; margin-bottom: 14px; flex-wrap: wrap; }
+  .chip { border: none; background: none; color: var(--dim2); padding: 4px 0; font: 600 11px var(--mono);
+    cursor: pointer; letter-spacing: 1.6px; text-transform: uppercase; border-bottom: 1px solid transparent; }
+  .chip.on { color: var(--accent); border-bottom-color: var(--accent); }
+  .chip:not(.on):hover { color: var(--dim); }
+
+  .tablewrap { overflow-x: auto; border-top: 1px solid var(--line); }
+  table { width: 100%; border-collapse: collapse; min-width: 820px; }
+  th { text-align: left; color: var(--dim2); font-size: 9.5px; text-transform: uppercase; letter-spacing: 2px; padding: 13px 14px 13px 0; border-bottom: 1px solid var(--hairline); font-weight: 600; }
+  td { padding: 13px 14px 13px 0; border-bottom: 1px solid var(--hairline); font-size: 12.5px; }
   tbody tr { opacity: 0; animation: rowin .4s ease forwards; }
-  @keyframes rowin { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; } }
-  tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover { background: var(--panel2); }
-  tr.first { box-shadow: inset 3px 0 0 var(--acid); }
-  tr.first td { background: rgba(200,255,0,.035); }
-  .rank { font-family: var(--disp); font-variation-settings: 'wght' 800; color: var(--dim2); font-size: 15px; }
-  tr.first .rank { color: var(--acid); }
-  .hname { font-weight: 600; font-size: 13.5px; color: var(--text); }
-  .mod { color: var(--dim2); font-size: 10.5px; }
-  .pill { border-radius: 2px; padding: 3px 9px; font-size: 11.5px; font-weight: 600; }
-  .pass { background: rgba(74,222,128,.1); color: var(--green); }
-  .part { background: rgba(251,191,36,.1); color: var(--amber); }
-  .fail { background: rgba(255,93,126,.1); color: var(--red); }
-  .bar { height: 5px; background: var(--panel2); width: 110px; overflow: hidden; border-radius: 1px; }
-  .bar i { display: block; height: 100%; width: 0; background: var(--acid); animation: barfill .9s .2s ease forwards; }
-  @keyframes barfill { to { width: var(--w); } }
-  .empty { border: 1px dashed var(--border2); padding: 50px; text-align: center; color: var(--dim); line-height: 2.2; border-radius: 2px; }
-  code.blk { display: inline-block; background: #070708; border: 1px solid var(--border); padding: 10px 16px; border-radius: 2px; color: var(--acid); font-size: 12px; margin-top: 10px; max-width: 100%; overflow-x: auto; }
+  @keyframes rowin { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+  tbody tr:hover td { background: rgba(255,255,255,.012); }
+  tr.first td:first-child { box-shadow: inset 2px 0 0 var(--accent); padding-left: 12px; }
+  .rank { font-family: var(--serif); color: var(--dim2); font-size: 15px; font-weight: 550; }
+  tr.first .rank { color: var(--accent); }
+  .hname { font-weight: 600; font-size: 12.5px; color: var(--text); }
+  .mod { color: var(--dim2); font-size: 10px; }
+  .tiertag { color: var(--dim2); font-size: 9.5px; letter-spacing: 1px; }
+  .pill { padding: 2px 0; font-size: 12px; font-weight: 600; }
+  .pass { color: var(--green); } .part { color: var(--amber); } .fail { color: var(--red); }
+  .scoreCell { color: var(--accent); font-weight: 700; }
+  .empty { border: 1px dashed var(--line); padding: 50px; text-align: center; color: var(--dim); line-height: 2.2; }
+  code.blk { display: inline-block; background: var(--panel); border: 1px solid var(--hairline); padding: 10px 16px; color: var(--text); font-size: 11.5px; margin-top: 10px; max-width: 100%; overflow-x: auto; }
 
   /* race */
-  .racebar { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
-  select, .btn { background: var(--panel); color: var(--text); border: 1px solid var(--border2); border-radius: 2px; padding: 12px 14px; font: 600 12px var(--mono); cursor: pointer; max-width: 330px; }
-  .btn.go { background: var(--acid); color: #050505; border-color: var(--acid); padding: 12px 32px; letter-spacing: 2px; font-weight: 800; transition: transform .12s, box-shadow .2s; }
-  .btn.go:hover { transform: scale(1.04); box-shadow: 0 0 34px rgba(200,255,0,.35); }
-  .vs { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--dim); }
-  .lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .racebar { display: flex; gap: 12px; align-items: center; margin-bottom: 22px; flex-wrap: wrap; }
+  select, .btn { background: var(--panel); color: var(--text); border: 1px solid var(--line); padding: 11px 13px; font: 600 11.5px var(--mono); cursor: pointer; max-width: 330px; border-radius: 0; }
+  .btn.go { background: var(--accent); color: #100f0d; border-color: var(--accent); padding: 11px 30px; letter-spacing: 2px; font-weight: 700; }
+  .btn.go:hover { filter: brightness(1.1); }
+  .vs { font-family: var(--serif); font-style: italic; font-size: 20px; color: var(--dim2); }
+  .lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media (max-width: 920px) { .lanes { grid-template-columns: 1fr; } }
-  .lane { background: var(--panel); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; position: relative; transition: border-color .3s, box-shadow .3s; }
-  .lane.winner { border-color: var(--acid); box-shadow: 0 0 44px rgba(200,255,0,.16); }
-  .lanehead { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border); background: #0a0b0d; }
-  .lanehead .who { font-family: var(--disp); font-variation-settings: 'wdth' 110, 'wght' 750; font-size: 16px; }
-  .clock { font-size: 24px; font-weight: 800; color: var(--acid); font-variant-numeric: tabular-nums; }
-  .progress { height: 3px; background: var(--panel2); }
-  .progress i { display: block; height: 100%; width: 0%; background: var(--acid); transition: width .12s linear; }
-  .term { height: 330px; overflow-y: auto; padding: 14px 18px; font-size: 11.5px; line-height: 1.8; position: relative; }
-  .term::after { content: ''; position: absolute; inset: 0; pointer-events: none;
-    background: repeating-linear-gradient(0deg, rgba(255,255,255,.014) 0 1px, transparent 1px 3px); }
-  .term .out { color: #a9adb6; } .term .err { color: var(--amber); opacity: .8; }
-  .term .sys { color: var(--acid); font-weight: 600; }
-  .finish { padding: 13px 18px; border-top: 1px solid var(--border); font-weight: 700; font-size: 14px; min-height: 46px; font-family: var(--disp); font-variation-settings: 'wdth' 110, 'wght' 700; }
-  .confetti { position: absolute; width: 7px; height: 7px; top: -10px; z-index: 5; animation: fall linear forwards; }
+  .lane { background: var(--panel); border: 1px solid var(--hairline); overflow: hidden; position: relative; transition: border-color .3s; }
+  .lane.winner { border-color: var(--accent); }
+  .lanehead { display: flex; justify-content: space-between; align-items: center; padding: 13px 18px; border-bottom: 1px solid var(--hairline); }
+  .lanehead .who { font-family: var(--serif); font-size: 18px; font-weight: 500; }
+  .clock { font-size: 21px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .progress { height: 2px; background: var(--panel2); }
+  .progress i { display: block; height: 100%; width: 0%; background: var(--accent); transition: width .12s linear; }
+  .term { height: 330px; overflow-y: auto; padding: 14px 18px; font-size: 11px; line-height: 1.85; background: #131110; }
+  .term .out { color: #a8a298; } .term .err { color: var(--amber); opacity: .8; }
+  .term .sys { color: var(--accent); font-weight: 600; }
+  .finish { padding: 13px 18px; border-top: 1px solid var(--hairline); font-weight: 500; font-size: 14px; min-height: 46px; font-family: var(--serif); }
+  .confetti { position: absolute; width: 6px; height: 6px; top: -10px; z-index: 5; animation: fall linear forwards; }
   @keyframes fall { to { transform: translateY(560px) rotate(720deg); opacity: 0; } }
 
   /* tasks / about */
-  .taskgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; }
-  .task { background: var(--panel); padding: 28px; transition: background .2s; }
-  .task:hover { background: var(--panel2); }
-  .task h3 { color: var(--acid); margin-bottom: 10px; font-size: 17px; font-family: var(--disp); font-variation-settings: 'wdth' 110, 'wght' 750; }
-  .task p { color: var(--dim); font-size: 12.5px; line-height: 1.85; }
+  .tierline { color: var(--dim2); font-size: 11px; letter-spacing: .5px; margin-bottom: 20px; }
+  .tierline b { color: var(--accent); font-weight: 600; }
+  .taskgrid { border-top: 1px solid var(--line); }
+  .task { padding: 24px 0 22px; border-bottom: 1px solid var(--hairline); display: grid; grid-template-columns: 220px 1fr; gap: 24px; }
+  @media (max-width: 720px) { .task { grid-template-columns: 1fr; } }
+  .task h3 { color: var(--text); font-size: 20px; font-family: var(--serif); font-weight: 480; }
+  .task h3 .t2 { color: var(--accent); font-family: var(--mono); font-size: 9.5px; letter-spacing: 2px; margin-left: 8px; vertical-align: 4px; }
+  .task p { color: var(--dim); font-size: 12px; line-height: 1.9; }
   .task .n { color: var(--green); font-weight: 600; }
-  .runown { margin-top: 16px; background: var(--panel); border: 1px solid var(--border); border-radius: 2px; padding: 28px; }
-  .runown h3 { font-family: var(--serif); font-style: italic; font-size: 24px; color: var(--text); margin-bottom: 8px; font-weight: 400; }
-  .runown p { color: var(--dim); font-size: 12.5px; line-height: 1.85; }
-  .about { color: var(--dim); font-size: 13.5px; line-height: 2.05; max-width: 760px; margin: 0 auto; }
-  .about h3 { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--text); margin: 30px 0 10px; font-size: 24px; }
-  .about b { color: var(--acid); font-weight: 600; }
-  footer { margin-top: 80px; color: var(--dim2); font-size: 11.5px; border-top: 1px solid var(--border); padding-top: 22px; text-align: center; line-height: 2.1; letter-spacing: .4px; }
+  .runown { margin-top: 26px; padding-top: 22px; }
+  .runown h3 { font-family: var(--serif); font-style: italic; font-size: 24px; color: var(--text); margin-bottom: 10px; font-weight: 400; }
+  .runown p { color: var(--dim); font-size: 12px; line-height: 1.9; max-width: 700px; }
+  .about { color: var(--dim); font-size: 13px; line-height: 2.05; max-width: 720px; }
+  .about h3 { font-family: var(--serif); font-style: italic; font-weight: 420; color: var(--text); margin: 30px 0 10px; font-size: 23px; }
+  .about b { color: var(--text); font-weight: 600; }
+  .about .ac { color: var(--accent); }
+  footer { margin-top: 80px; color: var(--dim2); font-size: 10.5px; border-top: 1px solid var(--hairline); padding-top: 22px; line-height: 2.1; letter-spacing: .5px; }
   footer b { color: var(--dim); }
 
   /* video overlays */
   #cap { position: fixed; left: 50%; bottom: 44px; transform: translateX(-50%); z-index: 999;
-    background: rgba(5,5,5,.94); border: 1px solid var(--acid); color: var(--text);
-    font: 600 19px var(--disp); font-variation-settings: 'wdth' 108, 'wght' 650;
-    padding: 15px 28px; border-radius: 2px; max-width: 86vw; text-align: center;
-    box-shadow: 0 10px 50px rgba(200,255,0,.18); display: none; }
-  #intro { position: fixed; inset: 0; z-index: 1000; background: #050505; display: none;
+    background: rgba(16,15,13,.95); border: 1px solid var(--accent); color: var(--text);
+    font: 500 19px var(--serif); padding: 15px 28px; max-width: 86vw; text-align: center; display: none; }
+  #intro { position: fixed; inset: 0; z-index: 1000; background: var(--bg); display: none;
     flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 6vw; }
-  #intro .big { font-family: var(--serif); font-style: italic; font-size: clamp(34px, 5.4vw, 64px); line-height: 1.25; max-width: 980px; }
-  #intro .big em { color: var(--acid); font-style: italic; }
-  #intro .sub { margin-top: 26px; color: var(--dim); font: 600 14px var(--mono); letter-spacing: 2px; text-transform: uppercase; }
+  #intro .big { font-family: var(--serif); font-style: italic; font-weight: 380; font-size: clamp(34px, 5.2vw, 62px); line-height: 1.3; max-width: 960px; }
+  #intro .big em { color: var(--accent); font-style: italic; }
+  #intro .sub { margin-top: 28px; color: var(--dim2); font: 600 12px var(--mono); letter-spacing: 3px; text-transform: uppercase; }
 </style>
 </head>
 <body>
 <div class="grain"></div>
-<div class="glow"></div>
 <div class="ticker"><span id="tickerSpan"></span></div>
 <div id="cap"></div>
 <div id="intro"><div class="big" id="introBig"></div><div class="sub" id="introSub"></div></div>
 
 <div class="wrap">
   <header>
-    <div class="kicker">BUILT IN LONDON <em>///</em> LIVE BOARD <em>///</em> REAL RUNS ONLY</div>
-    <h1 class="logo"><span class="l1">Harness</span><span class="l2">Arena</span></h1>
-    <div class="tagline">
-      <span class="q">Have you ever wondered if you're using AI the best way you could?</span>
-      Your harness is <b>your whole setup</b>: skills, CLAUDE.md / AGENTS.md, hooks, MCP servers, prompt and output tricks. Same model, same task: the setup decides. We race real setups on <b>hidden test suites</b> and put a rating on the difference.
-    </div>
+    <div class="kicker">Built in London <em>&middot;</em> Live board <em>&middot;</em> Real runs only</div>
+    <h1 class="logo">Harness<span class="it">Arena</span></h1>
+    <div class="standfirst">Have you ever wondered if you're using AI the best way you could?</div>
+    <div class="tagline">Your harness is <b>your whole setup</b>: skills, CLAUDE.md, AGENTS.md, hooks, MCP servers, prompt and output tricks. Same model, same task: <span class="ac">the setup decides.</span> We race real setups on hidden test suites and put a rating on the difference.</div>
     <div class="statrow" id="stats"></div>
   </header>
 
@@ -202,7 +185,7 @@
 
   <section id="board" class="view on">
     <div class="humanline" id="humanline"></div>
-    <div class="podium" id="podium"></div>
+    <div class="standings" id="podium"></div>
     <div class="chips" id="taskChips"></div>
     <div id="boardWrap"></div>
   </section>
@@ -212,8 +195,8 @@
       <select id="raceA"></select>
       <span class="vs">vs</span>
       <select id="raceB"></select>
-      <button class="btn go" id="raceGo">RACE &#9654;</button>
-      <select id="speed" style="max-width:90px">
+      <button class="btn go" id="raceGo">RACE</button>
+      <select id="speed" style="max-width:88px">
         <option value="4">4x</option>
         <option value="16" selected>16x</option>
         <option value="64">64x</option>
@@ -234,16 +217,17 @@
   </section>
 
   <section id="tasks" class="view">
-    <div class="humanline" style="margin-bottom:18px">TIER 1: CALIBRATION KATAS &middot; precision spec-following, hidden edge cases &middot; T2 debug / T3 extend / T4 build are next: see FORMAT</div>
+    <div class="tierline"><b>Tier 1</b> calibration katas weigh 1.0x &middot; <b>Tier 2</b> debugging weighs 1.5x &middot; T3 extend / T4 build are next: see FORMAT</div>
     <div class="taskgrid">
       <div class="task"><h3>csv-parser</h3><p>Spec-complete CSV parsing: quoted fields, escaped quotes, embedded commas and newlines, CRLF, trailing-newline semantics. <span class="n">10 hidden tests.</span></p></div>
       <div class="task"><h3>rate-limiter</h3><p>Sliding-window limiter with exact boundary semantics; rejected requests must not extend the window. <span class="n">8 hidden tests.</span></p></div>
       <div class="task"><h3>md-table</h3><p>GitHub-flavored markdown tables: column union in first-seen order, exact padding and alignment. <span class="n">6 hidden tests.</span></p></div>
+      <div class="task"><h3>debug-cart<span class="t2">TIER 2</span></h3><p>A three-file cart module ships with planted bugs and failing visible tests. Diagnose and fix with minimal edits: boundary semantics, missing defaults, formatting. Measures navigation and recovery, not just generation. <span class="n">12 hidden tests.</span></p></div>
     </div>
     <div class="runown">
       <h3>Race your own harness</h3>
       <p>Any CLI agent works: Codex, Claude Code, your custom scaffold with your skills, CLAUDE.md and hooks. The runner sandboxes the task workspace, timestamps every output line into a replayable trace, then scores against the hidden suite the agent never sees. Add your handles to get on the board.</p>
-      <code class="blk">node runner/run.mjs --task tasks/csv-parser --harness my-setup --owner mygithub --x myhandle --cmd "codex exec --full-auto {prompt}"</code>
+      <code class="blk">node runner/run.mjs --task tasks/debug-cart --harness my-setup --owner mygithub --x myhandle --cmd "codex exec --full-auto {prompt}"</code>
     </div>
   </section>
 
@@ -252,15 +236,15 @@
       <h3>What counts as a harness</h3>
       <p>Everything that is yours around the model: your skills and slash commands, your CLAUDE.md / AGENTS.md, your hooks, your MCP servers, your prompt style, even output tricks like single-file HTML. Same model, same task: two participants get different results because their setups differ. That difference is what we measure.</p>
       <h3>Arena Rating</h3>
-      <p>Each run is scored 0-1000 against the best agent run on the same task, and <b>quality gates everything</b>: score = 1000 &times; pass-rate &times; (0.5 + 0.25 speed + 0.15 token economy + 0.10 output economy). Speed is wall-clock vs the fastest run; tokens are counted as the vendor reports them (cache included, ~estimated when unreported); chattiness costs you. A fast failure scores zero. Your harness rating is the sum of its best run per task, so coverage counts: max 3000 across today's tasks. Elo-style head-to-head updates take over once the field is large enough.</p>
+      <p>Each run is scored 0-1000 against the best agent run on the same task, and <b>quality gates everything</b>: score = 1000 &times; pass-rate &times; (0.5 + 0.25 speed + 0.15 token economy + 0.10 output economy). Speed is wall-clock vs the fastest run; tokens are counted as the vendor reports them (cache included, ~estimated when unreported); chattiness costs you. A fast failure scores zero. Your harness rating is the <span class="ac">tier-weighted sum</span> of its best run per task: Tier 1 katas weigh 1.0x, Tier 2 debugging weighs 1.5x. Coverage counts. Elo-style head-to-head updates take over once the field is large enough.</p>
       <h3>The task ladder</h3>
-      <p>Today's three tasks are <b>Tier 1: calibration katas</b>, precision spec-following with hidden edge cases. The ladder above them: <b>T2 debug</b> (repo with planted bugs and failing hidden tests: diagnosis and recovery), <b>T3 extend</b> (add a feature without breaking hidden regression tests: context handling), <b>T4 build</b> (make a broken project run: the full tool loop). Higher tiers weight more. Sealed per-event suites and parameterized task generators keep the ladder unmemorizable.</p>
+      <p><b>T1 calibration katas</b>: precision spec-following with hidden edge cases. <b>T2 debug</b> (live today): a repo with planted bugs and failing visible tests - diagnosis and recovery. <b>T3 extend</b>: add a feature without breaking hidden regression tests - context handling. <b>T4 build</b>: make a broken project run - the full tool loop. Higher tiers weigh more. Sealed per-event suites and parameterized task generators keep the ladder unmemorizable.</p>
       <h3>Honesty</h3>
       <p>No synthetic rows. Every leaderboard entry is a real recorded run, and its full timestamped trace is replayable in the RACE tab. The <b>reference-human</b> rows are the scripted human reference solution: the bar every agent is chasing.</p>
     </div>
   </section>
 
-  <footer>HARNESSARENA / BUILT IN LONDON / JUNE 12 2026<br><b>Static HTML, zero frameworks</b> (the unreasonable effectiveness of HTML). All data = real recorded runs.</footer>
+  <footer>HARNESSARENA &middot; BUILT IN LONDON &middot; JUNE 12 2026<br><b>Static HTML, zero frameworks</b> (the unreasonable effectiveness of HTML). All data = real recorded runs.</footer>
 </div>
 
 <script>
@@ -269,6 +253,9 @@ const $ = id => document.getElementById(id);
 const fmtS = ms => (ms / 1000).toFixed(1) + 's';
 const fmtKB = b => (b / 1024).toFixed(1) + 'KB';
 const HUMAN = 'reference-human';
+const TASK_TIER = { 'csv-parser': 1, 'rate-limiter': 1, 'md-table': 1, 'debug-cart': 2 };
+const TIER_WEIGHT = { 1: 1.0, 2: 1.5, 3: 2.0, 4: 2.5 };
+const tierOf = t => TASK_TIER[t] ?? 1;
 
 document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
   document.querySelectorAll('nav button').forEach(x => x.classList.remove('on'));
@@ -290,37 +277,12 @@ function countUp(el, target, suffix = '', decimals = 0) {
   })(t0);
 }
 
-function renderStats() {
-  const harnesses = [...new Set(RUNS.map(r => r.harness))];
-  const standings = computeStandings();
-  const top = standings[0];
-  const fastestPerfect = RUNS.filter(r => r.score === 1 && r.harness !== HUMAN)
-    .reduce((a, b) => !a || b.durationMs < a.durationMs ? b : a, null);
-  $('stats').innerHTML = `
-    <div class="stat"><div class="k">Recorded runs</div><div class="v" data-n="${RUNS.length}"></div></div>
-    <div class="stat"><div class="k">Harnesses</div><div class="v" data-n="${harnesses.length}"></div></div>
-    <div class="stat"><div class="k">Top arena rating</div><div class="v ac" data-n="${top ? top.rating : 0}"></div></div>
-    <div class="stat"><div class="k">Fastest agent clear</div><div class="v ac" data-s="${fastestPerfect ? (fastestPerfect.durationMs/1000).toFixed(1) : ''}"></div></div>`;
-  document.querySelectorAll('.stat .v').forEach(el => {
-    if (el.dataset.n) countUp(el, Number(el.dataset.n));
-    else if (el.dataset.s) countUp(el, Number(el.dataset.s), 's', 1);
-    else el.textContent = '-';
-  });
-}
-
-function renderTicker() {
-  const items = RUNS.slice(-12).reverse().map(r =>
-    `<b>${r.harness}</b> &gt; ${r.task} <i>${r.passed}/${r.total}</i> in ${fmtS(r.durationMs)}<span class="sep">///</span>`).join('');
-  $('tickerSpan').innerHTML = items + items;
-}
-
 /* tokens: reported by the agent when available, else estimated from output bytes (~4 chars/token) */
 const tokOf = r => r.tokensReported ?? Math.max(1, Math.round(r.outputBytes / 4));
 const tokLabel = r => r.tokensReported ? r.tokensReported.toLocaleString() : '~' + tokOf(r).toLocaleString();
 
-/* Arena Rating: per run, each metric is normalized against the best agent run on the same task.
-   quality 50% + speed 25% + token economy 15% + output economy 10%, scaled to 1000.
-   Entry rating = sum of its best run score per task (coverage counts). Human baseline excluded. */
+/* Arena Rating: per run, metrics normalized against the best agent run on the same task.
+   Quality gates everything; entry rating = tier-weighted sum of best run per task. */
 function computeRunScores() {
   const agents = RUNS.filter(r => r.harness !== HUMAN);
   const byTask = {};
@@ -334,7 +296,6 @@ function computeRunScores() {
     };
     for (const r of f) {
       const Q = r.score, S = m.time / r.durationMs, T = m.tok / tokOf(r), C = m.out / Math.max(1, r.outputBytes);
-      // quality gates everything: a fast failure scores 0, speed and cost only count on working code
       r.runScore = Math.round(1000 * Q * (0.5 + 0.25 * S + 0.15 * T + 0.10 * C));
     }
   }
@@ -348,15 +309,44 @@ function computeStandings() {
     e.runs++; e.scoreSum += r.score; e.timeSum += r.durationMs;
     if (!e.best[r.task] || r.runScore > e.best[r.task]) e.best[r.task] = r.runScore;
   }
+  const nTasks = new Set(RUNS.map(r => r.task)).size;
   return Object.values(entries)
-    .map(e => ({ ...e, rating: Object.values(e.best).reduce((a, b) => a + b, 0), covered: Object.keys(e.best).length }))
+    .map(e => ({
+      ...e,
+      rating: Math.round(Object.entries(e.best).reduce((s, [t, sc]) => s + sc * TIER_WEIGHT[tierOf(t)], 0)),
+      covered: Object.keys(e.best).length, nTasks,
+    }))
     .sort((a, b) => b.rating - a.rating);
 }
 
 function handleHTML(e) {
-  let h = e.owner ? `<a href="https://github.com/${e.owner}" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none">@${e.owner}</a>` : '<span style="color:var(--dim2)">anonymous</span>';
-  if (e.x) h += ` <a href="https://x.com/${e.x}" target="_blank" rel="noopener" style="color:var(--dim);text-decoration:none">&#120143; ${e.x}</a>`;
+  let h = e.owner ? `<a href="https://github.com/${e.owner}" target="_blank" rel="noopener">github/${e.owner}</a>` : '<span style="color:var(--dim2)">anonymous</span>';
+  if (e.x) h += ` &nbsp;<a href="https://x.com/${e.x}" target="_blank" rel="noopener">x/${e.x}</a>`;
   return h;
+}
+
+function renderStats() {
+  const harnesses = [...new Set(RUNS.map(r => r.harness))];
+  const standings = computeStandings();
+  const top = standings[0];
+  const fastestPerfect = RUNS.filter(r => r.score === 1 && r.harness !== HUMAN)
+    .reduce((a, b) => !a || b.durationMs < a.durationMs ? b : a, null);
+  $('stats').innerHTML = `
+    <div class="stat"><div class="k">Recorded runs</div><div class="v" data-n="${RUNS.length}"></div></div>
+    <div class="stat"><div class="k">Harnesses</div><div class="v" data-n="${harnesses.length}"></div></div>
+    <div class="stat"><div class="k">Top arena rating</div><div class="v ac" data-n="${top ? top.rating : 0}"></div></div>
+    <div class="stat"><div class="k">Fastest agent clear</div><div class="v" data-s="${fastestPerfect ? (fastestPerfect.durationMs/1000).toFixed(1) : ''}"></div></div>`;
+  document.querySelectorAll('.stat .v').forEach(el => {
+    if (el.dataset.n) countUp(el, Number(el.dataset.n));
+    else if (el.dataset.s) countUp(el, Number(el.dataset.s), 's', 1);
+    else el.textContent = '-';
+  });
+}
+
+function renderTicker() {
+  const items = RUNS.slice(-14).reverse().map(r =>
+    `<b>${r.harness}</b> &gt; ${r.task} <i>${r.passed}/${r.total}</i> in ${fmtS(r.durationMs)}<span class="sep">///</span>`).join('');
+  $('tickerSpan').innerHTML = items + items;
 }
 
 function renderPodium() {
@@ -364,13 +354,17 @@ function renderPodium() {
   const h = RUNS.filter(r => r.harness === HUMAN);
   if (h.length) {
     const ht = h.reduce((s, r) => s + r.durationMs, 0);
-    $('humanline').innerHTML = `HUMAN BASELINE: <b>reference-human</b> cleared ${h.length} tasks, 100% pass, ${fmtS(ht)} total. Unrated. The bar.`;
+    $('humanline').innerHTML = `HUMAN BASELINE &middot; <b>reference-human</b> cleared ${h.length} tasks, 100% pass, ${fmtS(ht)} total &middot; unrated &middot; the bar`;
   }
-  $('podium').innerHTML = ranked.slice(0, 3).map((a, i) => `
-    <div class="pod ${i === 0 ? 'p1' : ''}">
-      <div class="rk">${a.rating}</div>
-      <div class="nm">${a.harness}</div>
-      <div class="meta">${handleHTML(a)}<br>${a.model || ''} &middot; <i>${(a.scoreSum / a.runs * 100).toFixed(0)}% pass</i> &middot; ${a.covered}/3 tasks<br><span style="color:var(--dim2)">${a.setup || ''}</span></div>
+  $('podium').innerHTML = ranked.map((a, i) => `
+    <div class="srow ${i === 0 ? 'lead' : ''}">
+      <div class="rating">${a.rating}</div>
+      <div>
+        <div class="nm">${a.harness}</div>
+        <div class="handles">${handleHTML(a)}</div>
+        <div class="setup">${a.setup || ''}</div>
+      </div>
+      <div class="sright">${a.model || ''}<br><i>${(a.scoreSum / a.runs * 100).toFixed(0)}% pass</i> &middot; ${a.covered}/${a.nTasks} tasks &middot; avg ${fmtS(a.timeSum / a.runs)}</div>
     </div>`).join('');
 }
 
@@ -393,13 +387,13 @@ function renderBoard() {
   $('boardWrap').innerHTML = `<div class="tablewrap"><table><thead><tr>
     <th>#</th><th>Harness</th><th>Participant</th><th>Task</th><th>Hidden tests</th><th>Run score</th><th>Time</th><th>Tokens</th><th>Output</th>
   </tr></thead><tbody>` + rows.map((r, i) => `
-    <tr class="${i === 0 ? 'first' : ''}" style="animation-delay:${i * 55}ms">
+    <tr class="${i === 0 ? 'first' : ''}" style="animation-delay:${i * 50}ms">
       <td class="rank">${i + 1}</td>
       <td><span class="hname">${r.harness}</span><br><span class="mod">${r.model || ''}</span></td>
-      <td style="font-size:11.5px">${r.harness === HUMAN ? '<span style="color:var(--dim2)">baseline</span>' : handleHTML(r)}</td>
-      <td>${r.task}</td>
+      <td style="font-size:11px;color:var(--dim)">${r.harness === HUMAN ? '<span style="color:var(--dim2)">baseline</span>' : (r.owner ? '@' + r.owner + (r.x ? ' &middot; x/' + r.x : '') : 'anonymous')}</td>
+      <td>${r.task}<br><span class="tiertag">TIER ${tierOf(r.task)}</span></td>
       <td>${pillFor(r)}</td>
-      <td>${r.harness === HUMAN ? '<span style="color:var(--dim2)">unrated</span>' : `<span style="color:var(--acid);font-weight:700">${r.runScore}</span>`}</td>
+      <td>${r.harness === HUMAN ? '<span style="color:var(--dim2)">unrated</span>' : `<span class="scoreCell">${r.runScore}</span>`}</td>
       <td>${fmtS(r.durationMs)}</td>
       <td>${r.harness === HUMAN ? '-' : tokLabel(r)}</td>
       <td>${fmtKB(r.outputBytes)}</td>
@@ -420,7 +414,7 @@ let raceTimers = [];
 async function loadTrace(id) { return (await fetch(`data/traces/${id}.json`)).json(); }
 
 function burstConfetti(lane) {
-  const colors = ['#c8ff00', '#f2f2ef', '#4ade80', '#ffd166'];
+  const colors = ['#ff5a1f', '#ece8df', '#4cb963', '#c9a227'];
   for (let i = 0; i < 60; i++) {
     const c = document.createElement('div');
     c.className = 'confetti';
@@ -452,8 +446,8 @@ function playLane(trace, ids, speed, onDone) {
     if (elapsed >= dur) {
       clearInterval(tick);
       const r = trace.run, ok = r.score === 1;
-      fin.innerHTML = `${ok ? '&#9889;' : r.score > 0 ? '&#9888;&#65039;' : '&#10060;'} ${r.passed}/${r.total} hidden tests in ${fmtS(r.durationMs)}`;
-      fin.style.color = ok ? 'var(--acid)' : r.score > 0 ? 'var(--amber)' : 'var(--red)';
+      fin.innerHTML = `${r.passed}/${r.total} hidden tests in ${fmtS(r.durationMs)}`;
+      fin.style.color = ok ? 'var(--green)' : r.score > 0 ? 'var(--amber)' : 'var(--red)';
       onDone(r);
     }
   }, 50);
