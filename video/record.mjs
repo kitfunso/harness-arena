@@ -44,19 +44,18 @@ await intro('Same task. Same model. <em>A hundred ways to harness it.</em>', 'WE
 await wait(4400);
 await intro('');
 
-// CH2 - hero + stats, gliding (0:12-0:21)
-await wait(1800);
-await glide(0, 360, 2600);
+// CH2 - masthead + standings above the fold (0:12-0:21)
+await wait(2400);
 await cap('Real recorded runs. Live board. Built this afternoon.');
-await glide(360, 560, 2400);
+await glide(0, 240, 3200);
 await wait(1800);
 
-// CH3 - standings (0:21-0:33)
+// CH3 - standings + run table (0:21-0:33)
 await cap('Every setup gets an Arena Rating: quality, speed, tokens, output.');
-await glide(560, 1000, 4200);
+await glide(240, 700, 4200);
 await wait(2200);
 await cap('Your skills, your CLAUDE.md, your hooks. The setup is the competitor.');
-await glide(1000, 1450, 3800);
+await glide(700, 1150, 3800);
 await wait(1600);
 
 // CH4 - race 1: same model, two configs (0:33-0:50)

@@ -36,27 +36,33 @@
 
   .wrap { max-width: 1140px; margin: 0 auto; padding: 0 26px 90px; }
 
-  /* hero: left-aligned, editorial */
-  header { padding: 64px 0 8px; border-bottom: 1px solid var(--hairline); }
+  /* masthead: compact broadsheet header */
+  header { padding: 30px 0 0; border-bottom: 1px solid var(--hairline); margin-bottom: 30px; }
+  .mhrow { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; flex-wrap: wrap; }
   .kicker { color: var(--dim2); font-size: 10.5px; letter-spacing: 3.5px; text-transform: uppercase; }
   .kicker em { color: var(--accent); font-style: normal; }
-  h1.logo { font-family: var(--serif); font-weight: 420; font-size: clamp(54px, 8.4vw, 104px);
-    line-height: 1.0; letter-spacing: -1px; margin-top: 22px; font-variation-settings: 'opsz' 144; }
+  h1.logo { font-family: var(--serif); font-weight: 440; font-size: clamp(34px, 4.4vw, 50px);
+    line-height: 1.0; letter-spacing: -.5px; font-variation-settings: 'opsz' 144; }
   h1.logo .it { font-style: italic; color: var(--accent); font-weight: 480; }
-  .standfirst { font-family: var(--serif); font-style: italic; font-weight: 350; font-size: clamp(19px, 2.4vw, 26px);
-    color: var(--text); margin: 26px 0 14px; max-width: 700px; line-height: 1.45; }
-  .tagline { font-size: 13px; max-width: 660px; line-height: 1.9; color: var(--dim); margin-bottom: 36px; }
-  .tagline b { color: var(--text); font-weight: 600; }
-  .tagline .ac { color: var(--accent); }
 
-  .statrow { display: flex; flex-wrap: wrap; border-top: 1px solid var(--hairline); }
-  .stat { flex: 1; min-width: 160px; padding: 18px 26px 22px 0; border-right: 1px solid var(--hairline); margin-right: 26px; }
-  .stat:last-child { border-right: none; margin-right: 0; }
+  /* two-column board */
+  .boardgrid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 48px; align-items: start; }
+  @media (max-width: 980px) { .boardgrid { grid-template-columns: 1fr; } .brail { border-left: none !important; padding-left: 0 !important; position: static !important; } }
+  .brail { position: sticky; top: 64px; display: flex; flex-direction: column; gap: 24px;
+    border-left: 1px solid var(--hairline); padding-left: 30px; }
+  #stats { display: flex; flex-direction: column; gap: 14px; }
+  .brail .stat { border-bottom: 1px solid var(--hairline); padding-bottom: 14px; }
   .stat .k { color: var(--dim2); font-size: 10px; text-transform: uppercase; letter-spacing: 2.2px; }
-  .stat .v { font-family: var(--serif); font-weight: 500; font-size: 42px; margin-top: 8px; color: var(--text); font-variation-settings: 'opsz' 60; }
+  .stat .v { font-family: var(--serif); font-weight: 500; font-size: 34px; margin-top: 6px; color: var(--text); font-variation-settings: 'opsz' 60; }
   .stat .v.ac { color: var(--accent); }
+  .pull { font-family: var(--serif); font-style: italic; font-weight: 360; font-size: 21px; line-height: 1.5; color: var(--text); }
+  .railcopy { font-size: 11.5px; line-height: 1.95; color: var(--dim); }
+  .railcopy b { color: var(--text); font-weight: 600; }
+  .railcopy .ac { color: var(--accent); }
+  .railenter .rk { color: var(--dim2); font-size: 10px; letter-spacing: 2.2px; margin-bottom: 8px; }
+  .railenter code { display: block; background: var(--panel); border: 1px solid var(--hairline); padding: 10px 12px; color: var(--text); font-size: 10px; line-height: 1.8; word-break: break-all; }
 
-  nav { display: flex; gap: 34px; margin: 0 0 38px; padding: 18px 0 0; position: sticky; top: 0; z-index: 50;
+  nav { display: flex; gap: 34px; margin: 22px 0 0; padding: 0; position: sticky; top: 0; z-index: 50;
     background: linear-gradient(var(--bg) 82%, transparent); }
   nav button { background: none; border: none; color: var(--dim2); font: 600 11.5px var(--mono);
     padding: 4px 0 10px; cursor: pointer; letter-spacing: 2.4px; border-bottom: 2px solid transparent; transition: color .15s; }
@@ -69,9 +75,9 @@
   .humanline { color: var(--dim2); font-size: 11.5px; margin-bottom: 18px; letter-spacing: .4px; }
   .humanline b { color: var(--gold); }
   .standings { border-top: 1px solid var(--line); margin-bottom: 44px; }
-  .srow { display: grid; grid-template-columns: 110px 1fr 280px; gap: 20px; align-items: baseline;
-    padding: 20px 0 18px; border-bottom: 1px solid var(--hairline); }
-  @media (max-width: 860px) { .srow { grid-template-columns: 90px 1fr; } .srow .sright { grid-column: 2; text-align: left; } }
+  .srow { display: grid; grid-template-columns: 96px 1fr; gap: 6px 22px; align-items: baseline;
+    padding: 18px 0 16px; border-bottom: 1px solid var(--hairline); }
+  .srow .sright { grid-column: 2; text-align: left; }
   .srow .rating { font-family: var(--serif); font-weight: 550; font-size: 40px; color: var(--dim); font-variation-settings: 'opsz' 60; }
   .srow.lead .rating { color: var(--accent); }
   .srow .nm { font-family: var(--serif); font-size: 23px; font-weight: 480; }
@@ -170,25 +176,33 @@
 
 <div class="wrap">
   <header>
-    <div class="kicker">Built in London <em>&middot;</em> Live board <em>&middot;</em> Real runs only</div>
-    <h1 class="logo">Harness<span class="it">Arena</span></h1>
-    <div class="standfirst">Have you ever wondered if you're using AI the best way you could?</div>
-    <div class="tagline">Your harness is <b>your whole setup</b>: skills, CLAUDE.md, AGENTS.md, hooks, MCP servers, prompt and output tricks. Same model, same task: <span class="ac">the setup decides.</span> We race real setups on hidden test suites and put a rating on the difference.</div>
-    <div class="statrow" id="stats"></div>
+    <div class="mhrow">
+      <h1 class="logo">Harness<span class="it">Arena</span></h1>
+      <div class="kicker">Built in London <em>&middot;</em> Live board <em>&middot;</em> Real runs only</div>
+    </div>
+    <nav>
+      <button class="on" data-v="board">ARENA</button>
+      <button data-v="race">RACE REPLAY</button>
+      <button data-v="tasks">TASKS</button>
+      <button data-v="about">FORMAT</button>
+    </nav>
   </header>
 
-  <nav>
-    <button class="on" data-v="board">ARENA</button>
-    <button data-v="race">RACE REPLAY</button>
-    <button data-v="tasks">TASKS</button>
-    <button data-v="about">FORMAT</button>
-  </nav>
-
   <section id="board" class="view on">
-    <div class="humanline" id="humanline"></div>
-    <div class="standings" id="podium"></div>
-    <div class="chips" id="taskChips"></div>
-    <div id="boardWrap"></div>
+    <div class="boardgrid">
+      <div class="bmain">
+        <div class="humanline" id="humanline"></div>
+        <div class="standings" id="podium"></div>
+        <div class="chips" id="taskChips"></div>
+        <div id="boardWrap"></div>
+      </div>
+      <aside class="brail">
+        <div id="stats"></div>
+        <div class="pull">Have you ever wondered if you're using AI the best way you could?</div>
+        <div class="railcopy">Your harness is <b>your whole setup</b>: skills, CLAUDE.md, AGENTS.md, hooks, MCP servers, prompt and output tricks. Same model, same task: <span class="ac">the setup decides.</span> Hidden test suites, real recorded runs, a rating on the difference.</div>
+        <div class="railenter"><div class="rk">ENTER THE ARENA</div><code>node runner/run.mjs --task tasks/debug-cart --harness my-setup --owner mygithub --x myhandle --submit --cmd "..."</code></div>
+      </aside>
+    </div>
   </section>
 
   <section id="race" class="view">
