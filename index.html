@@ -82,7 +82,9 @@
   .humanline { border: 2px solid var(--line); background: var(--panel2); color: var(--ink2); font-size: 11px; padding: 7px 12px; margin-bottom: 12px; }
   .humanline b { color: var(--amber); }
   .srow { border: 2px solid var(--line); background: var(--panel); margin-bottom: 12px; padding: 14px 16px 12px;
-    display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 4px 18px; }
+    display: grid; grid-template-columns: 52px minmax(0, 1fr) 150px; gap: 4px 14px; }
+  .srank { font-size: 26px; font-weight: 800; color: var(--ink2); align-self: start; line-height: 1.2; }
+  #lbBody .srow:first-child .srank { color: var(--yellow); }
   .srow .nm { font-size: 17px; font-weight: 800; letter-spacing: .5px; }
   .srow .nm .champ { background: var(--red); color: #fff; font-size: 9px; letter-spacing: 2px; padding: 3px 8px; margin-left: 10px; vertical-align: 2px; font-weight: 800; }
   .srow .handles { font-size: 11px; color: var(--ink2); }
@@ -193,8 +195,9 @@
     table { min-width: 560px; }
     th, td { padding: 9px 8px 9px 0; font-size: 11px; }
     th:first-child, td:first-child { padding-left: 10px; }
-    .srow { grid-template-columns: 1fr; }
-    .srow .scorecol { text-align: left; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+    .srow { grid-template-columns: 40px 1fr; }
+    .srank { font-size: 20px; }
+    .srow .scorecol { grid-column: 1 / -1; text-align: left; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
     .srow .rbar { width: 110px; align-self: center; }
     .srow .meta2 { flex-basis: 100%; margin-top: 2px; }
     .srow .rating { font-size: 26px; }
@@ -424,6 +427,7 @@ function renderPodium() {
   }
   $('lbBody').innerHTML = ranked.map((a, i) => `
     <div class="srow">
+      <div class="srank">#${i + 1}</div>
       <div>
         <div class="nm">${a.harness}${i === 0 ? '<span class="champ">CHAMPION</span>' : ''}</div>
         <div class="handles">${handleHTML(a)}</div>
