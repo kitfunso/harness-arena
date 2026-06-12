@@ -196,6 +196,7 @@
     .srow { grid-template-columns: 1fr; }
     .srow .scorecol { text-align: left; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
     .srow .rbar { width: 110px; align-self: center; }
+    .srow .meta2 { flex-basis: 100%; margin-top: 2px; }
     .srow .rating { font-size: 26px; }
     .racebar { flex-direction: column; align-items: stretch; }
     select, .btn { max-width: none; width: 100%; }
@@ -431,7 +432,7 @@ function renderPodium() {
       <div class="scorecol">
         <div class="rating">${a.rating}</div>
         <div class="rbar"><i style="--w:${Math.min(100, a.rating / MAX_RATING * 100)}%"></i></div>
-        <div class="meta2"><i>${(a.scoreSum / a.runs * 100).toFixed(0)}%</i> &middot; ${a.covered}/${a.nTasks} tasks &middot; ${a.model || ''}</div>
+        <div class="meta2"><i>${(a.scoreSum / a.runs * 100).toFixed(0)}% pass</i> &middot; ${a.covered}/${a.nTasks} tasks &middot; ${a.model || ''}</div>
       </div>
     </div>`).join('');
 }
