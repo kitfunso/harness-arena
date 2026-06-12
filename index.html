@@ -3,116 +3,215 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HarnessArena - benchmark your AI coding harness</title>
+<title>HarnessArena - race your AI coding harness</title>
+<meta property="og:title" content="HarnessArena">
+<meta property="og:description" content="Same task. Same hidden tests. Different harness. Real agent runs, ranked and replayable.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9876;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #07090d; --panel: #0d1117; --panel2: #11161d; --border: #1c2530;
-    --text: #d7e0ea; --dim: #6b7888; --cyan: #22d3ee; --violet: #a78bfa;
-    --green: #34d399; --amber: #fbbf24; --red: #f87171;
-    --mono: ui-monospace, 'Cascadia Code', 'SF Mono', Consolas, monospace;
+    --bg: #05060a; --panel: rgba(13,17,26,.82); --panel2: #10151f; --border: #1b2433;
+    --text: #e6edf5; --dim: #6f7e91; --cyan: #00e5ff; --violet: #b388ff; --green: #00ffa3;
+    --gold: #ffd166; --silver: #c9d6e4; --bronze: #e8975a; --red: #ff5d7e; --amber: #ffc14d;
+    --disp: 'Space Grotesk', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: var(--bg); color: var(--text); font-family: var(--mono);
-    min-height: 100vh;
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--mono); overflow-x: hidden; }
+
+  /* ---------- animated arena backdrop ---------- */
+  .bgfx { position: fixed; inset: 0; z-index: -3; overflow: hidden; }
+  .bgfx .grid {
+    position: absolute; inset: -60% -20%; z-index: -1;
     background-image:
-      linear-gradient(rgba(34,211,238,.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(34,211,238,.025) 1px, transparent 1px);
-    background-size: 42px 42px;
+      linear-gradient(rgba(0,229,255,.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,.07) 1px, transparent 1px);
+    background-size: 56px 56px;
+    transform: perspective(600px) rotateX(58deg);
+    transform-origin: 50% 0%;
+    animation: gridscroll 16s linear infinite;
+    mask-image: linear-gradient(to bottom, transparent 4%, #000 38%, transparent 92%);
   }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px 80px; }
-  header { padding: 38px 0 10px; }
-  .logo { font-size: 30px; font-weight: 700; letter-spacing: 1px; }
-  .logo .h { color: var(--text); }
+  @keyframes gridscroll { to { background-position: 0 56px, 56px 0; } }
+  .orb { position: absolute; border-radius: 50%; filter: blur(110px); opacity: .5; }
+  .orb.a { width: 560px; height: 560px; background: #0a3b66; top: -180px; left: -120px; animation: drift 19s ease-in-out infinite alternate; }
+  .orb.b { width: 480px; height: 480px; background: #2c1a5e; bottom: -200px; right: -100px; animation: drift 23s ease-in-out infinite alternate-reverse; }
+  @keyframes drift { to { transform: translate(120px, 70px) scale(1.15); } }
+  .vignette { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at 50% 28%, transparent 30%, rgba(0,0,0,.55) 100%); }
+
+  /* ---------- ticker ---------- */
+  .ticker { border-bottom: 1px solid var(--border); background: rgba(5,6,10,.9); overflow: hidden; white-space: nowrap; font-size: 11.5px; padding: 7px 0; letter-spacing: .4px; }
+  .ticker span { display: inline-block; animation: tick 36s linear infinite; }
+  @keyframes tick { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .ticker b { color: var(--cyan); font-weight: 600; }
+  .ticker i { color: var(--green); font-style: normal; }
+  .ticker .sep { color: var(--dim); margin: 0 16px; }
+
+  .wrap { max-width: 1220px; margin: 0 auto; padding: 0 22px 90px; }
+
+  /* ---------- hero ---------- */
+  header { padding: 58px 0 18px; text-align: center; }
+  .logo {
+    font-family: var(--disp); font-size: clamp(44px, 7.5vw, 84px); font-weight: 700;
+    letter-spacing: -2px; line-height: .95;
+  }
+  .logo .h { color: var(--text); text-shadow: 0 0 42px rgba(0,229,255,.25); }
   .logo .a {
-    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    background: linear-gradient(100deg, var(--cyan) 10%, var(--violet) 55%, var(--green) 100%);
+    background-size: 220% 100%;
     -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: shimmer 5s ease-in-out infinite;
   }
-  .tagline { color: var(--dim); margin-top: 8px; font-size: 14px; max-width: 720px; line-height: 1.6; }
+  @keyframes shimmer { 0%,100% { background-position: 0% 0; } 50% { background-position: 100% 0; } }
+  .tagline { color: var(--dim); margin: 18px auto 0; font-size: 14.5px; max-width: 680px; line-height: 1.75; }
   .tagline b { color: var(--cyan); font-weight: 600; }
-  nav { display: flex; gap: 6px; margin: 26px 0 22px; border-bottom: 1px solid var(--border); }
-  nav button {
-    background: none; border: none; color: var(--dim); font: 600 13px var(--mono);
-    padding: 10px 16px; cursor: pointer; border-bottom: 2px solid transparent; letter-spacing: .5px;
+
+  .statrow { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin: 34px 0 8px; }
+  .stat {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+    padding: 18px 30px; min-width: 168px; backdrop-filter: blur(6px);
+    transition: transform .25s, border-color .25s, box-shadow .25s;
   }
-  nav button.on { color: var(--cyan); border-bottom-color: var(--cyan); }
-  nav button:hover { color: var(--text); }
-  .view { display: none; } .view.on { display: block; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 26px; }
-  .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
-  .stat .k { color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; }
-  .stat .v { font-size: 30px; font-weight: 700; margin-top: 6px; }
-  .stat .v.grad {
+  .stat:hover { transform: translateY(-3px); border-color: rgba(0,229,255,.45); box-shadow: 0 12px 34px rgba(0,229,255,.10); }
+  .stat .k { color: var(--dim); font-size: 10.5px; text-transform: uppercase; letter-spacing: 2px; }
+  .stat .v { font-family: var(--disp); font-size: 38px; font-weight: 700; margin-top: 4px;
     background: linear-gradient(90deg, var(--cyan), var(--violet));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stat .v.gr { background: linear-gradient(90deg, var(--green), var(--cyan)); -webkit-background-clip: text; background-clip: text; }
+
+  /* ---------- nav ---------- */
+  nav { display: flex; gap: 8px; justify-content: center; margin: 30px 0 30px; position: sticky; top: 10px; z-index: 50; }
+  nav button {
+    background: var(--panel); border: 1px solid var(--border); color: var(--dim);
+    font: 600 12.5px var(--mono); padding: 11px 22px; cursor: pointer; border-radius: 999px;
+    letter-spacing: 1.2px; transition: all .22s; backdrop-filter: blur(8px);
   }
-  .chips { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-  .chip {
-    border: 1px solid var(--border); background: var(--panel); color: var(--dim);
-    border-radius: 999px; padding: 6px 14px; font: 600 12px var(--mono); cursor: pointer;
+  nav button.on { color: #021219; background: linear-gradient(95deg, var(--cyan), var(--violet)); border-color: transparent; box-shadow: 0 0 26px rgba(0,229,255,.35); }
+  nav button:not(.on):hover { color: var(--text); border-color: rgba(0,229,255,.4); }
+  .view { display: none; } .view.on { display: block; animation: fadein .35s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(10px); } }
+
+  /* ---------- podium ---------- */
+  .humanline { text-align: center; color: var(--dim); font-size: 12px; margin-bottom: 22px; }
+  .humanline b { color: var(--gold); }
+  .podium { display: flex; gap: 16px; justify-content: center; align-items: flex-end; margin-bottom: 36px; flex-wrap: wrap; }
+  .pod {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 16px;
+    padding: 22px 26px 18px; text-align: center; min-width: 218px; position: relative;
+    backdrop-filter: blur(6px); transition: transform .25s;
   }
-  .chip.on { color: var(--bg); background: var(--cyan); border-color: var(--cyan); }
-  table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-  th { text-align: left; color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
-  td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
-  tr:last-child td { border-bottom: none; }
-  tbody tr:hover { background: var(--panel2); }
-  tr.first td { background: linear-gradient(90deg, rgba(34,211,238,.08), rgba(167,139,250,.08)); }
-  .rank { font-weight: 700; color: var(--dim); }
-  tr.first .rank { color: var(--cyan); }
-  .hname { font-weight: 700; }
-  .mod { color: var(--dim); font-size: 12px; }
-  .pill { border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 700; }
-  .pass { background: rgba(52,211,153,.12); color: var(--green); }
-  .part { background: rgba(251,191,36,.12); color: var(--amber); }
-  .fail { background: rgba(248,113,113,.12); color: var(--red); }
-  .bar { height: 5px; border-radius: 3px; background: var(--border); width: 110px; overflow: hidden; }
-  .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--cyan), var(--violet)); }
-  .empty { border: 1px dashed var(--border); border-radius: 12px; padding: 44px; text-align: center; color: var(--dim); line-height: 2; }
-  code.blk { display: inline-block; background: var(--panel2); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; color: var(--cyan); font-size: 12px; margin-top: 8px; }
-  /* race */
-  .racebar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
-  select, .btn {
-    background: var(--panel); color: var(--text); border: 1px solid var(--border);
-    border-radius: 8px; padding: 9px 12px; font: 600 13px var(--mono); cursor: pointer;
-  }
-  .btn.go { background: linear-gradient(90deg, var(--cyan), var(--violet)); color: #04121a; border: none; padding: 9px 22px; }
-  .lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  @media (max-width: 900px) { .lanes { grid-template-columns: 1fr; } }
-  .lane { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-  .lane.winner { border-color: var(--cyan); box-shadow: 0 0 24px rgba(34,211,238,.18); }
-  .lanehead { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--panel2); }
-  .clock { font-size: 20px; font-weight: 700; color: var(--cyan); font-variant-numeric: tabular-nums; }
-  .term { height: 360px; overflow-y: auto; padding: 12px 16px; font-size: 11.5px; line-height: 1.75; }
-  .term .out { color: #9fb2c8; } .term .err { color: var(--amber); }
-  .term .sys { color: var(--violet); font-weight: 700; }
-  .finish { padding: 11px 16px; border-top: 1px solid var(--border); font-weight: 700; font-size: 13px; min-height: 42px; }
-  .task { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 14px; }
-  .task h3 { color: var(--cyan); margin-bottom: 8px; font-size: 16px; }
-  .task p { color: var(--dim); font-size: 13.5px; line-height: 1.7; }
-  .about { color: var(--dim); font-size: 14px; line-height: 1.9; max-width: 780px; }
-  .about h3 { color: var(--text); margin: 22px 0 8px; }
+  .pod:hover { transform: translateY(-4px); }
+  .pod .medal { font-size: 30px; }
+  .pod .nm { font-family: var(--disp); font-weight: 700; font-size: 19px; margin: 6px 0 2px; }
+  .pod .meta { color: var(--dim); font-size: 11.5px; line-height: 1.8; }
+  .pod .meta i { color: var(--green); font-style: normal; }
+  .pod.p1 { border-color: rgba(255,209,102,.55); box-shadow: 0 0 44px rgba(255,209,102,.14); padding-bottom: 34px; }
+  .pod.p1 .nm { color: var(--gold); }
+  .pod.p1::after { content: 'CHAMPION'; position: absolute; bottom: 10px; left: 0; right: 0; font-size: 9.5px; letter-spacing: 3px; color: var(--gold); opacity: .85; }
+  .pod.p2 { border-color: rgba(201,214,228,.3); } .pod.p2 .nm { color: var(--silver); }
+  .pod.p3 { border-color: rgba(232,151,90,.3); } .pod.p3 .nm { color: var(--bronze); }
+
+  /* ---------- board ---------- */
+  .chips { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; justify-content: center; }
+  .chip { border: 1px solid var(--border); background: var(--panel); color: var(--dim); border-radius: 999px; padding: 7px 16px; font: 600 12px var(--mono); cursor: pointer; transition: all .2s; }
+  .chip.on { color: #021219; background: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 18px rgba(0,229,255,.35); }
+  .tablewrap { overflow-x: auto; border-radius: 16px; border: 1px solid var(--border); background: var(--panel); backdrop-filter: blur(6px); }
+  table { width: 100%; border-collapse: collapse; min-width: 760px; }
+  th { text-align: left; color: var(--dim); font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.8px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+  td { padding: 13px 16px; border-bottom: 1px solid rgba(27,36,51,.6); font-size: 13.5px; }
+  tbody tr { opacity: 0; animation: rowin .45s ease forwards; }
+  @keyframes rowin { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; } }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(0,229,255,.045); }
+  tr.first td { background: linear-gradient(90deg, rgba(255,209,102,.10), rgba(0,229,255,.05)); }
+  tr.first { box-shadow: inset 3px 0 0 var(--gold); }
+  .rank { font-family: var(--disp); font-weight: 700; color: var(--dim); font-size: 15px; }
+  tr.first .rank { color: var(--gold); }
+  .hname { font-weight: 600; font-size: 14px; }
+  .mod { color: var(--dim); font-size: 11px; }
+  .pill { border-radius: 7px; padding: 3px 9px; font-size: 12px; font-weight: 600; }
+  .pass { background: rgba(0,255,163,.12); color: var(--green); }
+  .part { background: rgba(255,193,77,.12); color: var(--amber); }
+  .fail { background: rgba(255,93,126,.12); color: var(--red); }
+  .bar { height: 6px; border-radius: 3px; background: var(--panel2); width: 110px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--green)); animation: barfill 1s .2s ease forwards; }
+  @keyframes barfill { to { width: var(--w); } }
+  .empty { border: 1px dashed var(--border); border-radius: 16px; padding: 50px; text-align: center; color: var(--dim); line-height: 2.2; }
+  code.blk { display: inline-block; background: var(--panel2); border: 1px solid var(--border); padding: 9px 16px; border-radius: 9px; color: var(--cyan); font-size: 12px; margin-top: 10px; max-width: 100%; overflow-x: auto; }
+
+  /* ---------- race ---------- */
+  .racebar { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+  select, .btn { background: var(--panel2); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; font: 600 12.5px var(--mono); cursor: pointer; max-width: 330px; }
+  .btn.go { background: linear-gradient(95deg, var(--cyan), var(--green)); color: #021219; border: none; padding: 12px 30px; letter-spacing: 1.5px; box-shadow: 0 0 26px rgba(0,255,163,.3); transition: transform .15s; }
+  .btn.go:hover { transform: scale(1.05); }
+  .vs { font-family: var(--disp); font-weight: 700; font-size: 19px; color: var(--violet); text-shadow: 0 0 18px rgba(179,136,255,.6); }
+  .lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 920px) { .lanes { grid-template-columns: 1fr; } }
+  .lane { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; position: relative; backdrop-filter: blur(6px); transition: border-color .3s, box-shadow .3s; }
+  .lane.winner { border-color: var(--gold); box-shadow: 0 0 48px rgba(255,209,102,.22); }
+  .lanehead { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border); background: rgba(16,21,31,.9); }
+  .lanehead .who { font-family: var(--disp); font-weight: 700; font-size: 16px; }
+  .clock { font-size: 23px; font-weight: 800; color: var(--cyan); font-variant-numeric: tabular-nums; text-shadow: 0 0 16px rgba(0,229,255,.5); }
+  .progress { height: 4px; background: var(--panel2); }
+  .progress i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--cyan), var(--green)); transition: width .12s linear; box-shadow: 0 0 12px rgba(0,255,163,.7); }
+  .term { height: 330px; overflow-y: auto; padding: 14px 18px; font-size: 11.5px; line-height: 1.8; position: relative; }
+  .term::after { content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,.016) 0 1px, transparent 1px 3px); }
+  .term .out { color: #9fb6cf; } .term .err { color: var(--amber); opacity: .85; }
+  .term .sys { color: var(--violet); font-weight: 600; }
+  .finish { padding: 13px 18px; border-top: 1px solid var(--border); font-weight: 700; font-size: 14px; min-height: 46px; font-family: var(--disp); }
+  .confetti { position: absolute; width: 8px; height: 8px; top: -10px; z-index: 5; animation: fall linear forwards; }
+  @keyframes fall { to { transform: translateY(560px) rotate(720deg); opacity: 0; } }
+
+  /* ---------- tasks / about ---------- */
+  .taskgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .task { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 26px; transition: transform .22s, border-color .22s; backdrop-filter: blur(6px); }
+  .task:hover { transform: translateY(-4px); border-color: rgba(0,229,255,.4); }
+  .task h3 { color: var(--cyan); margin-bottom: 10px; font-size: 17px; font-family: var(--disp); }
+  .task p { color: var(--dim); font-size: 13px; line-height: 1.8; }
+  .task .n { color: var(--green); font-weight: 600; }
+  .runown { margin-top: 18px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 26px; backdrop-filter: blur(6px); }
+  .runown h3 { color: var(--violet); font-family: var(--disp); margin-bottom: 8px; }
+  .runown p { color: var(--dim); font-size: 13px; line-height: 1.8; }
+  .about { color: var(--dim); font-size: 14px; line-height: 2; max-width: 800px; margin: 0 auto; }
+  .about h3 { color: var(--text); margin: 26px 0 10px; font-family: var(--disp); font-size: 19px; }
   .about b { color: var(--cyan); }
-  footer { margin-top: 60px; color: var(--dim); font-size: 12px; border-top: 1px solid var(--border); padding-top: 18px; }
+  footer { margin-top: 70px; color: var(--dim); font-size: 12px; border-top: 1px solid var(--border); padding-top: 20px; text-align: center; line-height: 2; }
+  footer b { color: var(--violet); }
+
+  /* caption overlay used by the demo video recorder */
+  #cap { position: fixed; left: 50%; bottom: 42px; transform: translateX(-50%); z-index: 999;
+    background: rgba(2,8,14,.92); border: 1px solid rgba(0,229,255,.5); color: #eaf6ff;
+    font: 600 19px var(--disp); padding: 14px 26px; border-radius: 12px; max-width: 86vw; text-align: center;
+    box-shadow: 0 8px 44px rgba(0,229,255,.25); display: none; }
 </style>
 </head>
 <body>
+<div class="bgfx"><div class="orb a"></div><div class="orb b"></div><div class="grid"></div></div>
+<div class="vignette"></div>
+<div class="ticker"><span id="tickerSpan"></span></div>
+<div id="cap"></div>
+
 <div class="wrap">
   <header>
     <div class="logo"><span class="h">HARNESS</span><span class="a">ARENA</span></div>
-    <div class="tagline">Same task. Same hidden test suite. <b>Different harness.</b> Benchmarks rank models; swapping the harness around a model can move pass rates more than swapping the model. We race real agent setups head-to-head and rank what actually ships.</div>
+    <div class="tagline">Leaderboards rank models. But the <b>harness</b> around the model - prompts, tools, scaffolding, recovery - decides whether an agent ships or stalls. We race real agent setups on identical tasks with <b>hidden test suites</b> and rank what actually ships.</div>
+    <div class="statrow" id="stats"></div>
   </header>
 
   <nav>
-    <button class="on" data-v="board">LEADERBOARD</button>
+    <button class="on" data-v="board">ARENA</button>
     <button data-v="race">RACE REPLAY</button>
     <button data-v="tasks">TASKS</button>
     <button data-v="about">FORMAT</button>
   </nav>
 
   <section id="board" class="view on">
-    <div class="cards" id="stats"></div>
+    <div class="humanline" id="humanline"></div>
+    <div class="podium" id="podium"></div>
     <div class="chips" id="taskChips"></div>
     <div id="boardWrap"></div>
   </section>
@@ -120,41 +219,54 @@
   <section id="race" class="view">
     <div class="racebar">
       <select id="raceA"></select>
-      <span style="color:var(--dim);font-weight:700">VS</span>
+      <span class="vs">VS</span>
       <select id="raceB"></select>
       <button class="btn go" id="raceGo">&#9654; RACE</button>
-      <select id="speed">
+      <select id="speed" style="max-width:90px">
         <option value="4">4x</option>
         <option value="16" selected>16x</option>
         <option value="64">64x</option>
       </select>
     </div>
     <div class="lanes">
-      <div class="lane" id="laneA"><div class="lanehead"><div id="headA">-</div><div class="clock" id="clockA">0.0s</div></div><div class="term" id="termA"></div><div class="finish" id="finA"></div></div>
-      <div class="lane" id="laneB"><div class="lanehead"><div id="headB">-</div><div class="clock" id="clockB">0.0s</div></div><div class="term" id="termB"></div><div class="finish" id="finB"></div></div>
+      <div class="lane" id="laneA">
+        <div class="lanehead"><div class="who" id="headA">-</div><div class="clock" id="clockA">0.0s</div></div>
+        <div class="progress"><i id="progA"></i></div>
+        <div class="term" id="termA"></div><div class="finish" id="finA"></div>
+      </div>
+      <div class="lane" id="laneB">
+        <div class="lanehead"><div class="who" id="headB">-</div><div class="clock" id="clockB">0.0s</div></div>
+        <div class="progress"><i id="progB"></i></div>
+        <div class="term" id="termB"></div><div class="finish" id="finB"></div>
+      </div>
     </div>
   </section>
 
   <section id="tasks" class="view">
-    <div class="task"><h3>csv-parser</h3><p>Implement a spec-complete CSV parser: quoted fields, escaped quotes, embedded commas and newlines, CRLF, trailing-newline semantics. Scored against 10 hidden tests.</p></div>
-    <div class="task"><h3>rate-limiter</h3><p>Sliding-window rate limiter with exact boundary semantics; rejected requests must not extend the window. Scored against 8 hidden tests.</p></div>
-    <div class="task"><h3>md-table</h3><p>GitHub-flavored markdown table renderer: column union in first-seen order, exact padding and alignment rules. Scored against 6 hidden tests.</p></div>
-    <div class="task"><h3>Run your own harness</h3><p>Any CLI agent works - Codex, Claude Code, your custom scaffold. The runner copies the task workspace to a sandbox, your harness builds, the hidden suite (which the agent never sees) scores it:</p>
-    <code class="blk">node runner/run.mjs --task tasks/csv-parser --harness my-setup --cmd "codex exec --full-auto --cd {ws} {prompt}"</code></div>
+    <div class="taskgrid">
+      <div class="task"><h3>csv-parser</h3><p>Spec-complete CSV parsing: quoted fields, escaped quotes, embedded commas and newlines, CRLF, trailing-newline semantics. <span class="n">10 hidden tests.</span></p></div>
+      <div class="task"><h3>rate-limiter</h3><p>Sliding-window limiter with exact boundary semantics; rejected requests must not extend the window. <span class="n">8 hidden tests.</span></p></div>
+      <div class="task"><h3>md-table</h3><p>GitHub-flavored markdown tables: column union in first-seen order, exact padding and alignment. <span class="n">6 hidden tests.</span></p></div>
+    </div>
+    <div class="runown">
+      <h3>Race your own harness</h3>
+      <p>Any CLI agent works: Codex, Claude Code, your custom scaffold. The runner sandboxes the task workspace, timestamps every output line into a replayable trace, then scores against the hidden suite the agent never sees.</p>
+      <code class="blk">node runner/run.mjs --task tasks/csv-parser --harness my-setup --cmd "codex exec --full-auto {prompt}"</code>
+    </div>
   </section>
 
   <section id="about" class="view">
     <div class="about">
       <h3>Why HarnessArena</h3>
-      <p>A "harness" is everything around the model: system prompts, tool loop, scaffolding, recovery logic, context strategy. Public leaderboards hide it, yet it routinely decides whether an agent ships or stalls. HarnessArena makes the harness the unit of competition.</p>
+      <p>In 2026 the same model wrapped in two different harnesses can double its speed or fail a task outright. Public benchmarks hide that variable. HarnessArena makes the harness the unit of competition: configs compete, results are ranked, and every number has a receipt.</p>
       <h3>Scoring</h3>
-      <p><b>Correctness first:</b> pass rate on a hidden test suite the agent never sees. <b>Speed second:</b> wall-clock from prompt to done. Ties broken by output volume (chattiness costs you). Every row on the leaderboard is a real recorded run - the replay is the receipt.</p>
+      <p><b>Correctness first:</b> pass rate on a hidden test suite. <b>Speed second:</b> wall-clock from prompt to done. Ties break on output volume: chattiness costs you.</p>
       <h3>Honesty</h3>
-      <p>No synthetic numbers. Every run links to its full timestamped trace, replayable in the RACE tab.</p>
+      <p>No synthetic rows. Every leaderboard entry is a real recorded run, and its full timestamped trace is replayable in the RACE tab. The <b>reference-human</b> rows are the scripted human reference solution: the bar every agent is chasing.</p>
     </div>
   </section>
 
-  <footer>HARNESSARENA - Built in London hackathon, June 12 2026. Static HTML, zero frameworks (the unreasonable effectiveness of HTML). All data = real recorded runs.</footer>
+  <footer>HARNESSARENA: Built in London hackathon, June 12 2026<br><b>Static HTML, zero frameworks</b> (the unreasonable effectiveness of HTML). All data = real recorded runs.</footer>
 </div>
 
 <script>
@@ -162,8 +274,8 @@ let RUNS = [];
 const $ = id => document.getElementById(id);
 const fmtS = ms => (ms / 1000).toFixed(1) + 's';
 const fmtKB = b => (b / 1024).toFixed(1) + 'KB';
+const HUMAN = 'reference-human';
 
-// nav
 document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
   document.querySelectorAll('nav button').forEach(x => x.classList.remove('on'));
   document.querySelectorAll('.view').forEach(x => x.classList.remove('on'));
@@ -175,16 +287,61 @@ function pillFor(r) {
   return `<span class="pill ${cls}">${r.passed}/${r.total}</span>`;
 }
 
+function countUp(el, target, suffix = '', decimals = 0) {
+  const t0 = performance.now(), dur = 900;
+  (function step(now) {
+    const p = Math.min(1, (now - t0) / dur), eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = (target * eased).toFixed(decimals) + suffix;
+    if (p < 1) requestAnimationFrame(step);
+  })(t0);
+}
+
 function renderStats() {
   const harnesses = [...new Set(RUNS.map(r => r.harness))];
-  const tasks = [...new Set(RUNS.map(r => r.task))];
-  const perfect = RUNS.filter(r => r.score === 1);
+  const agents = harnesses.filter(h => h !== HUMAN);
+  const perfect = RUNS.filter(r => r.score === 1 && r.harness !== HUMAN);
   const fastest = perfect.length ? perfect.reduce((a, b) => a.durationMs < b.durationMs ? a : b) : null;
   $('stats').innerHTML = `
-    <div class="stat"><div class="k">Recorded runs</div><div class="v grad">${RUNS.length}</div></div>
-    <div class="stat"><div class="k">Harnesses competing</div><div class="v">${harnesses.length}</div></div>
-    <div class="stat"><div class="k">Tasks</div><div class="v">${tasks.length}</div></div>
-    <div class="stat"><div class="k">Fastest perfect run</div><div class="v" style="color:var(--green)">${fastest ? fmtS(fastest.durationMs) : '-'}</div></div>`;
+    <div class="stat"><div class="k">Recorded runs</div><div class="v" data-n="${RUNS.length}"></div></div>
+    <div class="stat"><div class="k">Harnesses</div><div class="v" data-n="${harnesses.length}"></div></div>
+    <div class="stat"><div class="k">Agent perfect runs</div><div class="v gr" data-n="${perfect.length}"></div></div>
+    <div class="stat"><div class="k">Fastest agent clear</div><div class="v gr" data-s="${fastest ? (fastest.durationMs/1000).toFixed(1) : ''}"></div></div>`;
+  document.querySelectorAll('.stat .v').forEach(el => {
+    if (el.dataset.n) countUp(el, Number(el.dataset.n));
+    else if (el.dataset.s) countUp(el, Number(el.dataset.s), 's', 1);
+    else el.textContent = '-';
+  });
+}
+
+function renderTicker() {
+  const items = RUNS.slice(-12).reverse().map(r =>
+    `<b>${r.harness}</b> &gt; ${r.task} <i>${r.passed}/${r.total}</i> in ${fmtS(r.durationMs)}<span class="sep">///</span>`).join('');
+  $('tickerSpan').innerHTML = items + items;
+}
+
+function renderPodium() {
+  const agg = {};
+  for (const r of RUNS.filter(r => r.harness !== HUMAN)) {
+    (agg[r.harness] ??= { harness: r.harness, model: r.model, runs: 0, score: 0, time: 0 });
+    agg[r.harness].runs++; agg[r.harness].score += r.score; agg[r.harness].time += r.durationMs;
+  }
+  const ranked = Object.values(agg).map(a => ({ ...a, avg: a.score / a.runs }))
+    .sort((x, y) => y.avg - x.avg || y.runs - x.runs || x.time / x.runs - y.time / y.runs);
+  const h = RUNS.filter(r => r.harness === HUMAN);
+  if (h.length) {
+    const ht = h.reduce((s, r) => s + r.durationMs, 0);
+    $('humanline').innerHTML = `HUMAN BASELINE: <b>reference-human</b> cleared ${h.length} tasks, 100% pass, ${fmtS(ht)} total. The bar.`;
+  }
+  const medals = ['&#129351;', '&#129352;', '&#129353;'];
+  const cls = ['p1', 'p2', 'p3'];
+  const order = ranked.length > 2 ? [ranked[1], ranked[0], ranked[2]] : ranked.length === 2 ? [ranked[1], ranked[0]] : ranked;
+  const pos = r => ranked.indexOf(r);
+  $('podium').innerHTML = order.map(a => `
+    <div class="pod ${cls[pos(a)]}">
+      <div class="medal">${medals[pos(a)]}</div>
+      <div class="nm">${a.harness}</div>
+      <div class="meta">${a.model || ''}<br><i>${(a.avg * 100).toFixed(0)}% pass</i> across ${a.runs} task${a.runs > 1 ? 's' : ''}<br>avg ${fmtS(a.time / a.runs)} / task</div>
+    </div>`).join('');
 }
 
 let taskFilter = 'all';
@@ -202,43 +359,57 @@ function renderBoard() {
     $('boardWrap').innerHTML = `<div class="empty">No runs recorded yet.<br>Be the first into the arena:<br><code class="blk">node runner/run.mjs --task tasks/csv-parser --harness your-name --cmd "..."</code></div>`;
     return;
   }
-  $('boardWrap').innerHTML = `<table><thead><tr>
-    <th>#</th><th>Harness</th><th>Task</th><th>Hidden tests</th><th>Score</th><th>Time</th><th>Output</th><th>Tokens</th>
+  $('boardWrap').innerHTML = `<div class="tablewrap"><table><thead><tr>
+    <th>#</th><th>Harness</th><th>Task</th><th>Hidden tests</th><th>Score</th><th>Time</th><th>Output</th>
   </tr></thead><tbody>` + rows.map((r, i) => `
-    <tr class="${i === 0 ? 'first' : ''}">
+    <tr class="${i === 0 ? 'first' : ''}" style="animation-delay:${i * 60}ms">
       <td class="rank">${i + 1}</td>
       <td><span class="hname">${r.harness}</span><br><span class="mod">${r.model || ''}</span></td>
       <td>${r.task}</td>
       <td>${pillFor(r)}</td>
-      <td><div class="bar"><i style="width:${r.score * 100}%"></i></div></td>
+      <td><div class="bar"><i style="--w:${r.score * 100}%"></i></div></td>
       <td>${fmtS(r.durationMs)}</td>
       <td>${fmtKB(r.outputBytes)}</td>
-      <td>${r.tokensReported ? r.tokensReported.toLocaleString() : '-'}</td>
-    </tr>`).join('') + '</tbody></table>';
+    </tr>`).join('') + '</tbody></table></div>';
 }
 
-// ---- race replay ----
+/* ---------- race replay ---------- */
 function fillRaceSelects() {
-  const opts = RUNS.map(r => `<option value="${r.id}">${r.harness} - ${r.task} (${r.passed}/${r.total}, ${fmtS(r.durationMs)})</option>`).join('');
+  const opts = RUNS.map(r => `<option value="${r.id}">${r.harness} / ${r.task} (${r.passed}/${r.total}, ${fmtS(r.durationMs)})</option>`).join('');
   $('raceA').innerHTML = opts; $('raceB').innerHTML = opts;
-  if (RUNS.length > 1) $('raceB').selectedIndex = 1;
+  const a = RUNS.findIndex(r => r.harness === 'codex-low-effort' && r.task === 'csv-parser');
+  const b = RUNS.findIndex(r => r.harness === 'codex-xhigh-effort' && r.task === 'csv-parser');
+  if (a > -1) $('raceA').selectedIndex = a;
+  if (b > -1) $('raceB').selectedIndex = b;
 }
 
 let raceTimers = [];
-async function loadTrace(id) {
-  const res = await fetch(`data/traces/${id}.json`);
-  return res.json();
+async function loadTrace(id) { return (await fetch(`data/traces/${id}.json`)).json(); }
+
+function burstConfetti(lane) {
+  const colors = ['#ffd166', '#00e5ff', '#00ffa3', '#b388ff', '#ff5d7e'];
+  for (let i = 0; i < 60; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + '%';
+    c.style.background = colors[i % colors.length];
+    c.style.animationDuration = (1.4 + Math.random() * 1.6) + 's';
+    c.style.animationDelay = (Math.random() * .5) + 's';
+    lane.appendChild(c);
+    setTimeout(() => c.remove(), 3600);
+  }
 }
 
-function playLane(trace, term, clock, fin, lane, speed, onDone) {
+function playLane(trace, ids, speed, onDone) {
+  const [term, clock, fin, lane, prog] = ids.map($);
   term.innerHTML = `<div class="sys">$ ${trace.run.harness} &gt; ${trace.run.task}</div>`;
-  fin.textContent = ''; lane.classList.remove('winner');
-  const t0 = performance.now();
-  const dur = trace.run.durationMs;
+  fin.textContent = ''; lane.classList.remove('winner'); prog.style.width = '0%';
+  const t0 = performance.now(), dur = trace.run.durationMs;
   let ei = 0;
   const tick = setInterval(() => {
     const elapsed = (performance.now() - t0) * speed;
     clock.textContent = fmtS(Math.min(elapsed, dur));
+    prog.style.width = Math.min(100, elapsed / dur * 100) + '%';
     while (ei < trace.events.length && trace.events[ei].t <= elapsed) {
       const e = trace.events[ei++];
       const d = document.createElement('div');
@@ -247,9 +418,8 @@ function playLane(trace, term, clock, fin, lane, speed, onDone) {
     }
     if (elapsed >= dur) {
       clearInterval(tick);
-      const r = trace.run;
-      const ok = r.score === 1;
-      fin.innerHTML = `${ok ? '&#127942;' : r.score > 0 ? '&#9888;' : '&#10060;'} ${r.passed}/${r.total} hidden tests - ${fmtS(r.durationMs)}`;
+      const r = trace.run, ok = r.score === 1;
+      fin.innerHTML = `${ok ? '&#127942;' : r.score > 0 ? '&#9888;&#65039;' : '&#10060;'} ${r.passed}/${r.total} hidden tests in ${fmtS(r.durationMs)}`;
       fin.style.color = ok ? 'var(--green)' : r.score > 0 ? 'var(--amber)' : 'var(--red)';
       onDone(r);
     }
@@ -266,20 +436,25 @@ $('raceGo').onclick = async () => {
   const judge = () => {
     if (!done[0] || !done[1]) return;
     const [a, b] = done;
+    if (a.score === b.score && a.durationMs === b.durationMs) return;
     const w = b.score - a.score || a.durationMs - b.durationMs;
-    if (a.score !== b.score || a.durationMs !== b.durationMs)
-      (w <= 0 ? $('laneA') : $('laneB')).classList.add('winner');
+    const lane = w <= 0 ? $('laneA') : $('laneB');
+    lane.classList.add('winner'); burstConfetti(lane);
   };
-  playLane(ta, $('termA'), $('clockA'), $('finA'), $('laneA'), speed, r => { done[0] = r; judge(); });
-  playLane(tb, $('termB'), $('clockB'), $('finB'), $('laneB'), speed, r => { done[1] = r; judge(); });
+  playLane(ta, ['termA', 'clockA', 'finA', 'laneA', 'progA'], speed, r => { done[0] = r; judge(); });
+  playLane(tb, ['termB', 'clockB', 'finB', 'laneB', 'progB'], speed, r => { done[1] = r; judge(); });
 };
 
-// ---- boot ----
+/* caption helper for the demo recorder */
+window.arenaCaption = txt => {
+  const c = $('cap');
+  if (!txt) { c.style.display = 'none'; return; }
+  c.textContent = txt; c.style.display = 'block';
+};
+
 (async () => {
-  try {
-    RUNS = await (await fetch('data/runs.json')).json();
-  } catch { RUNS = []; }
-  renderStats(); renderChips(); renderBoard(); fillRaceSelects();
+  try { RUNS = await (await fetch('data/runs.json')).json(); } catch { RUNS = []; }
+  renderStats(); renderTicker(); renderPodium(); renderChips(); renderBoard(); fillRaceSelects();
 })();
 </script>
 </body>
