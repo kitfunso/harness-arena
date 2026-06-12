@@ -96,10 +96,14 @@
   .srow .meta2 i { color: var(--green); font-style: normal; }
   @keyframes barfill { to { width: var(--w); } }
 
-  .chips { display: flex; gap: 8px; margin: 16px 0 12px; flex-wrap: wrap; }
-  .chip { border: 2px solid var(--line); background: var(--bg); color: var(--ink2); padding: 5px 14px; font: 700 11px var(--mono); cursor: pointer; letter-spacing: 1px; text-transform: uppercase; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tabsrow { padding: 8px 10px; border-bottom: 2px solid var(--line); background: var(--panel2); }
+  .chip { border: 2px solid var(--line); background: var(--bg); color: var(--ink2); padding: 4px 13px; font: 700 10.5px var(--mono); cursor: pointer; letter-spacing: 1px; text-transform: uppercase; }
   .chip.on { background: var(--yellow); color: #0c0d0a; }
-  .chip:not(.on):hover { background: var(--panel2); }
+  .chip:not(.on):hover { background: var(--panel); }
+  #lbBody .srow { border: none; border-bottom: 2px solid var(--line); margin-bottom: 0; }
+  #lbBody .srow:last-child { border-bottom: none; }
+  #lbBody .tablewrap { border: none; }
 
   .tablewrap { overflow-x: auto; border: 2px solid var(--line); background: var(--panel); }
   table { width: 100%; border-collapse: collapse; min-width: 860px; }
@@ -209,10 +213,16 @@
   <section id="board" class="view on">
     <div class="boardgrid">
       <div class="bmain">
-        <div class="humanline" id="humanline"></div>
-        <div class="standings" id="podium"></div>
-        <div class="chips" id="taskChips"></div>
-        <div id="boardWrap"></div>
+        <div class="box">
+          <div class="boxhead"><span>LEADERBOARD</span><span id="lbmode">OVERALL &middot; ALL TASKS</span></div>
+          <div class="chips tabsrow" id="taskChips"></div>
+          <div id="lbBody"></div>
+        </div>
+        <div class="humanline" id="humanline" style="margin-top:14px"></div>
+        <div class="box" style="margin-top:14px">
+          <div class="boxhead"><span>RUN LOG</span><span>EVERY RECORDED RUN</span></div>
+          <div id="boardWrap"></div>
+        </div>
       </div>
       <aside class="brail">
         <div class="box"><div class="boxhead"><span>LIVE STATS</span><span>///</span></div><div class="boxbody" id="stats"></div></div>
@@ -389,7 +399,7 @@ function renderPodium() {
     const ht = h.reduce((s, r) => s + r.durationMs, 0);
     $('humanline').innerHTML = `HUMAN BASELINE &middot; <b>reference-human</b> cleared ${h.length} tasks, 100% pass, ${fmtS(ht)} total &middot; unrated &middot; the bar`;
   }
-  $('podium').innerHTML = ranked.map((a, i) => `
+  $('lbBody').innerHTML = ranked.map((a, i) => `
     <div class="srow">
       <div>
         <div class="nm">${a.harness}${i === 0 ? '<span class="champ">CHAMPION</span>' : ''}</div>
@@ -408,32 +418,50 @@ let taskFilter = 'all';
 function renderChips() {
   const tasks = ['all', ...new Set(RUNS.map(r => r.task))];
   $('taskChips').innerHTML = tasks.map(t =>
-    `<button class="chip ${t === taskFilter ? 'on' : ''}" data-t="${t}">${t}</button>`).join('');
-  document.querySelectorAll('.chip').forEach(c => c.onclick = () => { taskFilter = c.dataset.t; renderChips(); renderBoard(); });
+    `<button class="chip ${t === taskFilter ? 'on' : ''}" data-t="${t}">${t === 'all' ? 'OVERALL' : t}</button>`).join('');
+  document.querySelectorAll('.chip').forEach(c => c.onclick = () => { taskFilter = c.dataset.t; renderChips(); renderLeaderboard(); });
 }
 
-function renderBoard() {
-  const rows = RUNS.filter(r => taskFilter === 'all' || r.task === taskFilter)
-    .slice().sort((a, b) => b.score - a.score || a.durationMs - b.durationMs);
-  if (!rows.length) {
-    $('boardWrap').innerHTML = `<div class="empty">No runs recorded yet.<br>Be the first into the arena:<br><code class="blk">node runner/run.mjs --task tasks/csv-parser --harness your-name --cmd "..."</code></div>`;
-    return;
-  }
-  computeRunScores();
-  $('boardWrap').innerHTML = `<div class="tablewrap"><table><thead><tr>
-    <th>#</th><th>Harness</th><th>Participant</th><th>Task</th><th>Tests</th><th>Score</th><th>Time</th><th>Tokens</th><th>Output</th>
-  </tr></thead><tbody>` + rows.map((r, i) => `
+function runRow(r, i, showTask) {
+  return `
     <tr class="${i === 0 ? 'first' : ''}" style="animation-delay:${i * 45}ms">
       <td class="rank">${i + 1}</td>
       <td><span class="hname">${r.harness}</span><br><span class="mod">${r.model || ''}</span></td>
       <td style="font-size:10.5px;color:var(--ink2)">${r.harness === HUMAN ? '<span style="color:var(--ink3)">baseline</span>' : (r.owner ? '@' + r.owner + (r.x ? ' &middot; x/' + r.x : '') : 'anonymous')}</td>
-      <td>${r.task} <span class="tiertag ${tierOf(r.task) === 2 ? 't2tag' : 't1tag'}">T${tierOf(r.task)}</span></td>
+      ${showTask ? `<td>${r.task} <span class="tiertag ${tierOf(r.task) === 2 ? 't2tag' : 't1tag'}">T${tierOf(r.task)}</span></td>` : ''}
       <td>${pillFor(r)}</td>
       <td>${r.harness === HUMAN ? '<span style="color:var(--ink3)">unrated</span>' : `<span class="scoreCell">${r.runScore}</span>`}</td>
       <td>${fmtS(r.durationMs)}</td>
       <td>${r.harness === HUMAN ? '-' : tokLabel(r)}</td>
       <td>${fmtKB(r.outputBytes)}</td>
-    </tr>`).join('') + '</tbody></table></div>';
+    </tr>`;
+}
+
+function renderLeaderboard() {
+  computeRunScores();
+  if (taskFilter === 'all') {
+    $('lbmode').textContent = 'OVERALL · ALL TASKS';
+    renderPodium();
+    return;
+  }
+  $('lbmode').textContent = taskFilter.toUpperCase() + ' · TIER ' + tierOf(taskFilter);
+  const rows = RUNS.filter(r => r.task === taskFilter)
+    .slice().sort((a, b) => (b.runScore ?? -1) - (a.runScore ?? -1) || a.durationMs - b.durationMs);
+  $('lbBody').innerHTML = `<div class="tablewrap"><table><thead><tr>
+    <th>#</th><th>Harness</th><th>Participant</th><th>Tests</th><th>Score</th><th>Time</th><th>Tokens</th><th>Output</th>
+  </tr></thead><tbody>` + rows.map((r, i) => runRow(r, i, false)).join('') + '</tbody></table></div>';
+}
+
+function renderBoard() {
+  const rows = RUNS.slice().sort((a, b) => b.score - a.score || a.durationMs - b.durationMs);
+  if (!rows.length) {
+    $('boardWrap').innerHTML = `<div class="empty">No runs recorded yet.<br>Be the first into the arena:<br><code class="blk">node runner/run.mjs --task tasks/csv-parser --harness your-name --cmd "..."</code></div>`;
+    return;
+  }
+  computeRunScores();
+  $('boardWrap').innerHTML = `<div class="tablewrap" style="border:none"><table><thead><tr>
+    <th>#</th><th>Harness</th><th>Participant</th><th>Task</th><th>Tests</th><th>Score</th><th>Time</th><th>Tokens</th><th>Output</th>
+  </tr></thead><tbody>` + rows.map((r, i) => runRow(r, i, true)).join('') + '</tbody></table></div>';
 }
 
 /* race replay */
@@ -536,7 +564,7 @@ window.arenaIntro = (big, sub) => {
       }
     }
   } catch { /* no community backend configured */ }
-  renderStats(); renderTicker(); renderPodium(); renderChips(); renderBoard(); fillRaceSelects();
+  renderStats(); renderTicker(); renderChips(); renderLeaderboard(); renderBoard(); fillRaceSelects();
 })();
 </script>
 </body>
