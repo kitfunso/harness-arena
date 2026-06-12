@@ -32,8 +32,10 @@ const task = basename(taskDir);
 const spec = readFileSync(join(taskDir, 'README.md'), 'utf8');
 const ws = mkdtempSync(join(tmpdir(), `arena-${task}-`));
 cpSync(join(taskDir, 'workspace'), ws, { recursive: true });
+// Spec goes into the workspace as a file; multi-line prompts don't survive Windows shells.
+writeFileSync(join(ws, 'TASK.md'), spec);
 
-const promptQuoted = `"${spec.replace(/"/g, '\\"')}"`;
+const promptQuoted = '"Complete the task described in TASK.md in the current directory. Edit impl.mjs only. A hidden test suite scores you on correctness - be precise about the spec, then stop."';
 const cmd = cmdTemplate.replaceAll('{ws}', ws).replaceAll('{prompt}', promptQuoted);
 
 const startedAt = new Date().toISOString();
