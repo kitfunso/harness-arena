@@ -58,7 +58,9 @@ console.log(`[arena] ws=${ws}`);
 console.log(`[arena] cmd=${cmd.slice(0, 160)}...`);
 
 // stdin must be closed: codex exec waits forever on a piped-open stdin ("Reading additional input...").
-const child = spawn(cmd, { shell: true, cwd: ws, env: { ...process.env, ARENA_WS: ws }, stdio: ['ignore', 'pipe', 'pipe'] });
+const childEnv = { ...process.env, ARENA_WS: ws };
+delete childEnv.CLAUDECODE; // claude CLI refuses to launch nested inside a Claude Code session
+const child = spawn(cmd, { shell: true, cwd: ws, env: childEnv, stdio: ['ignore', 'pipe', 'pipe'] });
 let outputBytes = 0;
 child.stdout.on('data', d => { outputBytes += d.length; record('out', d); });
 child.stderr.on('data', d => { outputBytes += d.length; record('err', d); });
